@@ -2,7 +2,11 @@
 <html lang="he" dir="rtl">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#8b5a8c">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
 <title>בוט המדור להכשרה מקצועית | ביה"ס לעבודה סוציאלית - האוניברסיטה העברית</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -34,6 +38,8 @@ html, body {
   background: linear-gradient(135deg, #fef0f5 0%, #fdf6f0 50%, #fef7e8 100%);
   min-height: 100vh;
   color: var(--c-text);
+  overflow-x: hidden;
+  -webkit-text-size-adjust: 100%;
 }
 
 .page-wrapper {
@@ -445,15 +451,136 @@ html, body {
 }
 .footer a:hover { text-decoration: underline; }
 
-/* Mobile */
-@media (max-width: 600px) {
+/* Mobile - tablets and smaller */
+@media (max-width: 768px) {
   .page-wrapper { padding: 0; }
-  #bot-wrapper { border-radius: 0; min-height: 100vh; }
-  #chat-area { height: calc(100vh - 130px); }
-  .header { padding: 1rem; }
-  .header .titles p { font-size: 13px; }
-  .header .titles p.sub { font-size: 10px; }
-  .bot-bubble h4 { font-size: 18px; }
+  #bot-wrapper {
+    border-radius: 0;
+    min-height: 100vh;
+    max-width: 100%;
+    box-shadow: none;
+  }
+  #chat-area {
+    height: calc(100dvh - 145px);
+    min-height: calc(100dvh - 145px);
+    padding: 1rem 0.875rem;
+  }
+  .header { padding: 0.875rem 1rem; gap: 8px; }
+  .header .logo-box {
+    width: 40px;
+    height: 40px;
+    border-radius: 11px;
+  }
+  .header .logo-box svg { width: 26px; height: 26px; }
+  .header .titles p { font-size: 13px; line-height: 1.25; }
+  .header .titles p.sub { font-size: 10px; line-height: 1.25; }
+  .header .titles.left p { font-size: 11px; }
+
+  .bot-msg { gap: 8px; margin-bottom: 14px; }
+  .avatar-mini {
+    width: 36px;
+    height: 36px;
+    border-width: 2px;
+  }
+  .avatar-mini svg { width: 36px; height: 36px; }
+
+  .bot-bubble {
+    padding: 14px 14px;
+    font-size: 14.5px;
+    line-height: 1.65;
+    border-radius: 18px 18px 18px 4px;
+    max-width: calc(100% - 44px);
+  }
+  .bot-bubble h4 {
+    font-size: 18px;
+    margin-bottom: 10px;
+  }
+
+  .user-bubble {
+    padding: 10px 14px;
+    font-size: 14px;
+    border-radius: 18px 18px 4px 18px;
+    max-width: 85%;
+  }
+
+  .center-hero {
+    width: calc(100% + 28px);
+    margin: -14px -14px 14px -14px;
+    height: 130px;
+    border-radius: 18px 18px 0 0;
+  }
+
+  .section-label {
+    font-size: 13px;
+    margin: 14px 0 8px 0;
+  }
+
+  .place-chip {
+    padding: 10px 12px;
+    font-size: 13px;
+    gap: 9px;
+  }
+  .place-chip .chip-icon {
+    width: 30px;
+    height: 30px;
+    border-radius: 9px;
+  }
+  .place-chip .chip-icon i { font-size: 15px; }
+
+  .contact-card {
+    padding: 12px 14px;
+    border-radius: 14px;
+  }
+  .contact-card .name { font-size: 14.5px; }
+  .contact-row { font-size: 13px; }
+
+  .note-box {
+    padding: 10px 12px;
+    font-size: 12.5px;
+    border-radius: 12px;
+  }
+
+  .staff-card {
+    padding: 14px;
+    gap: 12px;
+    border-radius: 16px;
+  }
+  .staff-card .staff-icon {
+    width: 48px;
+    height: 48px;
+    border-radius: 13px;
+  }
+  .staff-card .staff-icon i { font-size: 24px; }
+  .staff-card .info h5 { font-size: 15px; }
+  .staff-card .role { font-size: 11.5px; }
+
+  .bot-btn {
+    padding: 11px 14px;
+    font-size: 13.5px;
+    border-radius: 14px;
+    border-width: 1.5px;
+  }
+  .bot-btn .arrow { font-size: 16px; }
+  .bot-btn.back {
+    padding: 9px 12px;
+    font-size: 12.5px;
+  }
+
+  .footer {
+    font-size: 10px;
+    padding: 10px 14px;
+  }
+}
+
+/* Extra small mobile - phones under 380px */
+@media (max-width: 380px) {
+  .header { padding: 0.75rem 0.875rem; }
+  .header .titles p { font-size: 12px; }
+  .header .titles p.sub { font-size: 9.5px; }
+  .header .titles.left { display: none; }
+  .bot-bubble { font-size: 14px; padding: 12px 13px; }
+  .bot-bubble h4 { font-size: 17px; }
+  .center-hero { height: 115px; }
 }
 </style>
 </head>
@@ -1181,6 +1308,18 @@ function scrollDown() {
   setTimeout(() => { chatArea.scrollTop = chatArea.scrollHeight; }, 50);
 }
 
+// Scroll the new bot message to the TOP of the visible area
+// so user sees the heading/hero image first, not the buttons at the bottom
+function scrollToMessage(el) {
+  if (!el) return;
+  setTimeout(() => {
+    const containerTop = chatArea.getBoundingClientRect().top;
+    const msgTop = el.getBoundingClientRect().top;
+    const offset = msgTop - containerTop + chatArea.scrollTop - 12;
+    chatArea.scrollTo({ top: offset, behavior: 'smooth' });
+  }, 80);
+}
+
 function showTyping() {
   initAvatars();
   typingEl.style.display = 'flex';
@@ -1222,7 +1361,8 @@ function botMessage(html, options, delay) {
       <div class="bot-bubble">${html}${optsHtml}</div>
     `;
     messagesEl.appendChild(msg);
-    scrollDown();
+    // Scroll so the TOP of the new message is visible (heading + hero image first)
+    scrollToMessage(msg);
   }, delay);
 }
 
