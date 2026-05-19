@@ -1,0 +1,1388 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>בוט המדור להכשרה מקצועית | ביה"ס לעבודה סוציאלית - האוניברסיטה העברית</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Heebo:wght@400;500;700;800&family=Rubik:wght@400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@2.47.0/tabler-icons.min.css">
+
+<style>
+:root {
+  --c-primary: #8b5a8c;
+  --c-primary-light: #a86fa1;
+  --c-coral: #d97a8c;
+  --c-gold: #e8b86a;
+  --c-bg-soft: #fdf6f0;
+  --c-bg-pink: #fef0f5;
+  --c-pink-light: #fde5ec;
+  --c-pink-pale: #fadbe1;
+  --c-cream: #fef7f0;
+  --c-text: #3d2b3e;
+  --c-text-soft: #8a7a85;
+  --c-text-muted: #a8909b;
+}
+
+* { box-sizing: border-box; }
+
+html, body {
+  margin: 0;
+  padding: 0;
+  font-family: 'Heebo', 'Rubik', system-ui, sans-serif;
+  background: linear-gradient(135deg, #fef0f5 0%, #fdf6f0 50%, #fef7e8 100%);
+  min-height: 100vh;
+  color: var(--c-text);
+}
+
+.page-wrapper {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+
+#bot-wrapper {
+  width: 100%;
+  max-width: 720px;
+  background: linear-gradient(180deg, #fdf6f0 0%, #fef0f5 100%);
+  border-radius: 24px;
+  overflow: hidden;
+  position: relative;
+  box-shadow: 0 10px 40px rgba(139, 90, 140, 0.15);
+}
+
+/* Header */
+.header {
+  background: linear-gradient(135deg, #8b5a8c 0%, #d97a8c 60%, #e8b86a 100%);
+  padding: 1.25rem 1.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  position: relative;
+  overflow: hidden;
+}
+.header .deco1 {
+  position: absolute; top: -20px; right: 30%;
+  width: 80px; height: 80px;
+  background: rgba(255,255,255,0.15);
+  border-radius: 50%;
+}
+.header .deco2 {
+  position: absolute; bottom: -30px; left: 20%;
+  width: 100px; height: 100px;
+  background: rgba(255,255,255,0.1);
+  border-radius: 50%;
+}
+.header .logo-wrap {
+  display: flex; align-items: center; gap: 12px;
+  min-width: 0; position: relative; z-index: 1;
+}
+.header .logo-box {
+  width: 48px; height: 48px;
+  border-radius: 14px;
+  background: white;
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+.header .titles p {
+  margin: 0;
+  color: white;
+  font-size: 15px;
+  font-weight: 700;
+  line-height: 1.3;
+}
+.header .titles p.sub {
+  color: rgba(255,255,255,0.9);
+  font-size: 11px;
+  font-weight: 400;
+}
+.header .titles.left { text-align: left; }
+.header .titles.left p { font-size: 12px; }
+
+/* Chat area */
+#chat-area {
+  padding: 1.5rem 1.25rem;
+  min-height: 500px;
+  height: 600px;
+  overflow-y: auto;
+}
+#chat-area::-webkit-scrollbar { width: 6px; }
+#chat-area::-webkit-scrollbar-track { background: transparent; }
+#chat-area::-webkit-scrollbar-thumb {
+  background: rgba(217, 122, 140, 0.3);
+  border-radius: 3px;
+}
+
+/* Animations */
+@keyframes dotBounce {
+  0%, 60%, 100% { transform: translateY(0); opacity: 0.4; }
+  30% { transform: translateY(-7px); opacity: 1; }
+}
+@keyframes slideUp {
+  from { opacity: 0; transform: translateY(12px) scale(0.98); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-3px); }
+}
+
+/* Typing */
+#typing {
+  display: none;
+  gap: 10px;
+  margin-bottom: 16px;
+  align-items: flex-end;
+}
+#typing .bubble {
+  background: white;
+  padding: 14px 18px;
+  border-radius: 22px 22px 22px 6px;
+  display: flex; gap: 5px;
+  box-shadow: 0 2px 10px rgba(139, 90, 140, 0.08);
+}
+.dot {
+  width: 8px; height: 8px;
+  border-radius: 50%;
+  background: var(--c-coral);
+  animation: dotBounce 1.2s infinite ease-in-out;
+}
+.dot:nth-child(2) { animation-delay: 0.15s; }
+.dot:nth-child(3) { animation-delay: 0.3s; }
+
+/* Messages */
+.bot-msg {
+  display: flex; gap: 12px;
+  margin-bottom: 16px;
+  align-items: flex-end;
+  animation: slideUp 0.4s ease-out;
+}
+.avatar-mini {
+  width: 44px; height: 44px;
+  flex-shrink: 0;
+  animation: float 4s ease-in-out infinite;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #fde5ec 0%, #f5d8c6 100%);
+  display: flex; align-items: flex-end; justify-content: center;
+  overflow: hidden;
+  box-shadow: 0 3px 10px rgba(139, 90, 140, 0.15);
+  border: 2.5px solid white;
+}
+
+.bot-bubble {
+  background: white;
+  border-radius: 22px 22px 22px 6px;
+  padding: 16px 18px;
+  font-size: 15px;
+  line-height: 1.7;
+  color: var(--c-text);
+  max-width: 92%;
+  flex: 1;
+  box-shadow: 0 2px 12px rgba(139, 90, 140, 0.08);
+}
+.bot-bubble h4 {
+  margin: 0 0 12px 0;
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--c-primary);
+  line-height: 1.3;
+  letter-spacing: -0.3px;
+}
+.bot-bubble p { margin: 0 0 10px 0; }
+.bot-bubble p:last-child { margin-bottom: 0; }
+.bot-bubble ul { margin: 8px 0; padding-inline-start: 22px; }
+.bot-bubble li { margin-bottom: 6px; }
+.bot-bubble ul li::marker { color: var(--c-coral); }
+
+.user-msg {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 16px;
+  animation: slideUp 0.4s ease-out;
+}
+.user-bubble {
+  background: linear-gradient(135deg, #8b5a8c 0%, #a86fa1 100%);
+  color: white;
+  font-weight: 500;
+  padding: 12px 18px;
+  border-radius: 22px 22px 6px 22px;
+  font-size: 14px;
+  max-width: 80%;
+  box-shadow: 0 2px 10px rgba(139, 90, 140, 0.2);
+}
+
+/* Buttons */
+.bot-options {
+  display: flex;
+  flex-direction: column;
+  gap: 9px;
+  margin-top: 14px;
+}
+.bot-btn {
+  background: white;
+  border: 2px solid var(--c-pink-pale);
+  color: var(--c-primary);
+  padding: 12px 16px;
+  border-radius: 16px;
+  font-size: 14px;
+  font-weight: 500;
+  font-family: inherit;
+  cursor: pointer;
+  text-align: right;
+  transition: all 0.2s;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  box-shadow: 0 1px 4px rgba(139, 90, 140, 0.05);
+}
+.bot-btn:hover {
+  background: linear-gradient(135deg, #d97a8c 0%, #e8b86a 100%);
+  border-color: transparent;
+  color: white;
+  transform: translateX(-3px);
+  box-shadow: 0 4px 14px rgba(217, 122, 140, 0.3);
+}
+.bot-btn .arrow { font-size: 18px; }
+.bot-btn.back {
+  border-color: #e8dde0;
+  color: var(--c-text-soft);
+  font-size: 13px;
+  padding: 10px 14px;
+  background: rgba(255,255,255,0.6);
+}
+.bot-btn.back:hover {
+  background: #f0e6ea;
+  color: #6b5a6c;
+  transform: none;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.05);
+}
+.bot-btn.link-btn {
+  background: linear-gradient(135deg, #e8b86a 0%, #d97a8c 100%);
+  color: white;
+  border: none;
+  font-weight: 700;
+}
+.bot-btn.link-btn:hover {
+  background: linear-gradient(135deg, #d97a8c 0%, #8b5a8c 100%);
+  color: white;
+}
+
+/* Hero illustration */
+.center-hero {
+  width: calc(100% + 36px);
+  margin: -16px -18px 16px -18px;
+  height: 160px;
+  border-radius: 22px 22px 0 0;
+  overflow: hidden;
+  position: relative;
+}
+
+/* Sections */
+.section-label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--c-coral);
+  margin: 18px 0 10px 0;
+  padding-bottom: 6px;
+  border-bottom: 2px dashed var(--c-pink-pale);
+}
+.section-label i { font-size: 16px; }
+
+.places-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 8px;
+  margin: 8px 0;
+}
+.place-chip {
+  background: linear-gradient(135deg, #fef7f0 0%, #fdf0ed 100%);
+  border: 1.5px solid var(--c-pink-pale);
+  padding: 11px 14px;
+  border-radius: 14px;
+  font-size: 13.5px;
+  font-weight: 500;
+  color: #4a3848;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  transition: transform 0.15s;
+}
+.place-chip:hover {
+  transform: translateX(-3px);
+  border-color: var(--c-coral);
+}
+.place-chip .chip-icon {
+  width: 32px;
+  height: 32px;
+  background: linear-gradient(135deg, #d97a8c 0%, #e8b86a 100%);
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+.place-chip .chip-icon i {
+  color: white;
+  font-size: 16px;
+}
+
+.contact-card {
+  background: linear-gradient(135deg, #fef7f0 0%, #fde5ec 100%);
+  border-radius: 16px;
+  padding: 14px 16px;
+  margin: 12px 0 8px 0;
+  border: 1.5px solid var(--c-pink-pale);
+}
+.contact-card .name {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--c-primary);
+  margin-bottom: 8px;
+}
+.contact-row {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  font-size: 13.5px;
+  color: #4a3848;
+  padding: 4px 0;
+  font-weight: 500;
+}
+.contact-row i {
+  color: var(--c-coral);
+  font-size: 16px;
+  width: 16px;
+}
+
+.note-box {
+  background: linear-gradient(135deg, #fff8e8 0%, #fde9d9 100%);
+  border: 1.5px solid #f5d4a3;
+  padding: 12px 14px;
+  border-radius: 14px;
+  margin: 12px 0;
+  font-size: 13.5px;
+  color: #6b4a0a;
+  font-weight: 500;
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+}
+.note-box i {
+  color: #c9a040;
+  font-size: 18px;
+  margin-top: 1px;
+  flex-shrink: 0;
+}
+
+.staff-card {
+  background: white;
+  border: 1.5px solid var(--c-pink-pale);
+  border-radius: 18px;
+  padding: 16px;
+  margin-bottom: 12px;
+  display: flex;
+  gap: 14px;
+  box-shadow: 0 2px 10px rgba(139, 90, 140, 0.05);
+}
+.staff-card .staff-icon {
+  width: 56px;
+  height: 56px;
+  border-radius: 16px;
+  flex-shrink: 0;
+  background: linear-gradient(135deg, #d97a8c 0%, #e8b86a 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 3px 10px rgba(217, 122, 140, 0.25);
+}
+.staff-card .staff-icon i {
+  color: white;
+  font-size: 28px;
+}
+.staff-card .info { flex: 1; min-width: 0; }
+.staff-card .info h5 {
+  margin: 0 0 3px 0;
+  color: var(--c-primary);
+  font-size: 16px;
+  font-weight: 700;
+}
+.staff-card .role {
+  font-size: 12px;
+  color: var(--c-text-muted);
+  margin-bottom: 10px;
+  font-weight: 500;
+}
+
+.welcome-emoji {
+  font-size: 22px;
+  display: inline-block;
+  animation: float 2s ease-in-out infinite;
+}
+
+/* Footer */
+.footer {
+  padding: 12px 20px;
+  text-align: center;
+  font-size: 11px;
+  color: var(--c-text-muted);
+  background: rgba(255,255,255,0.5);
+  border-top: 1px solid var(--c-pink-pale);
+}
+.footer a {
+  color: var(--c-primary);
+  text-decoration: none;
+  font-weight: 500;
+}
+.footer a:hover { text-decoration: underline; }
+
+/* Mobile */
+@media (max-width: 600px) {
+  .page-wrapper { padding: 0; }
+  #bot-wrapper { border-radius: 0; min-height: 100vh; }
+  #chat-area { height: calc(100vh - 130px); }
+  .header { padding: 1rem; }
+  .header .titles p { font-size: 13px; }
+  .header .titles p.sub { font-size: 10px; }
+  .bot-bubble h4 { font-size: 18px; }
+}
+</style>
+</head>
+<body>
+<div class="page-wrapper">
+<div id="bot-wrapper">
+
+<!-- Header -->
+<div class="header">
+  <div class="deco1"></div>
+  <div class="deco2"></div>
+
+  <div class="logo-wrap">
+    <div class="logo-box">
+      <svg width="32" height="32" viewBox="0 0 42 42">
+        <defs>
+          <linearGradient id="logo-g1" x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0" stop-color="#8b5a8c"/>
+            <stop offset="1" stop-color="#d97a8c"/>
+          </linearGradient>
+        </defs>
+        <path d="M21 6 C14 6 10 11 10 18 C10 24 14 28 21 28 C28 28 32 24 32 18 C32 11 28 6 21 6 Z" fill="url(#logo-g1)"/>
+        <circle cx="21" cy="17" r="3" fill="white"/>
+        <path d="M14 24 Q21 28 28 24" stroke="white" stroke-width="2" fill="none" stroke-linecap="round"/>
+        <path d="M15 30 L15 36 M27 30 L27 36 M21 28 L21 36" stroke="#e8b86a" stroke-width="2" stroke-linecap="round"/>
+      </svg>
+    </div>
+    <div class="titles">
+      <p>המדור להכשרה מקצועית</p>
+      <p class="sub">ביה"ס לעבודה סוציאלית ע"ש פאול ברוואלד</p>
+    </div>
+  </div>
+
+  <div class="logo-wrap">
+    <div class="titles left">
+      <p>האוניברסיטה</p>
+      <p>העברית</p>
+    </div>
+    <div class="logo-box">
+      <svg width="32" height="32" viewBox="0 0 42 42">
+        <defs>
+          <linearGradient id="logo-g2" x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0" stop-color="#8b5a8c"/>
+            <stop offset="1" stop-color="#d97a8c"/>
+          </linearGradient>
+        </defs>
+        <path d="M21 5 L34 12 L34 15 L8 15 L8 12 Z" fill="url(#logo-g2)"/>
+        <rect x="11" y="17" width="3" height="13" rx="1" fill="url(#logo-g2)"/>
+        <rect x="19.5" y="17" width="3" height="13" rx="1" fill="url(#logo-g2)"/>
+        <rect x="28" y="17" width="3" height="13" rx="1" fill="url(#logo-g2)"/>
+        <rect x="7" y="32" width="28" height="3" rx="1" fill="url(#logo-g2)"/>
+        <path d="M21 3 L23 7 L21 9 L19 7 Z" fill="#e8b86a"/>
+      </svg>
+    </div>
+  </div>
+</div>
+
+<!-- Chat area -->
+<div id="chat-area">
+  <div id="messages"></div>
+  <div id="typing">
+    <div class="avatar-mini"></div>
+    <div class="bubble">
+      <span class="dot"></span><span class="dot"></span><span class="dot"></span>
+    </div>
+  </div>
+</div>
+
+<div class="footer">
+  בוט מידע © המדור להכשרה מקצועית · בית הספר לעבודה סוציאלית ולרווחה חברתית · האוניברסיטה העברית בירושלים
+</div>
+
+</div>
+</div>
+
+<script>
+// ===================== Avatars =====================
+// Maya - young modern student-style avatar
+function makeAvatar(size) {
+  size = size || 44;
+  const uid = 'av' + size + Math.random().toString(36).slice(2, 7);
+  return `<svg width="${size}" height="${size}" viewBox="0 0 100 100">
+    <defs>
+      <linearGradient id="bg-${uid}" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0" stop-color="#fef0d9"/>
+        <stop offset="1" stop-color="#fde5ec"/>
+      </linearGradient>
+      <linearGradient id="hair-${uid}" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0" stop-color="#6b3a1f"/>
+        <stop offset="1" stop-color="#4a2614"/>
+      </linearGradient>
+      <linearGradient id="shirt-${uid}" x1="0" y1="0" x2="1" y2="1">
+        <stop offset="0" stop-color="#d97a8c"/>
+        <stop offset="1" stop-color="#e8b86a"/>
+      </linearGradient>
+      <radialGradient id="cheek-${uid}" cx="0.5" cy="0.5">
+        <stop offset="0" stop-color="#ff8fa3" stop-opacity="0.7"/>
+        <stop offset="1" stop-color="#ff8fa3" stop-opacity="0"/>
+      </radialGradient>
+    </defs>
+    <!-- background circle -->
+    <circle cx="50" cy="50" r="50" fill="url(#bg-${uid})"/>
+    <!-- shoulders/T-shirt -->
+    <path d="M12 100 Q12 70 50 70 Q88 70 88 100 Z" fill="url(#shirt-${uid})"/>
+    <!-- T-shirt neckline -->
+    <path d="M42 70 Q50 76 58 70 L58 74 Q50 80 42 74 Z" fill="#c45a70"/>
+    <!-- neck -->
+    <path d="M44 63 Q44 70 50 70 Q56 70 56 63 Z" fill="#e8a880"/>
+    <!-- face - rounder/younger -->
+    <ellipse cx="50" cy="46" rx="22" ry="23" fill="#f5c89a"/>
+    <!-- side ponytail (right side) -->
+    <ellipse cx="76" cy="44" rx="9" ry="14" fill="url(#hair-${uid})" transform="rotate(15 76 44)"/>
+    <!-- hair bun base (top) -->
+    <ellipse cx="58" cy="22" rx="12" ry="8" fill="url(#hair-${uid})"/>
+    <!-- hair main mass - youthful bangs and side -->
+    <path d="M28 44 Q26 22 42 16 Q50 13 58 14 Q70 16 72 32 Q72 38 70 42 Q67 32 60 30 Q54 28 48 30 Q40 32 34 38 Q30 42 28 48 Z" fill="url(#hair-${uid})"/>
+    <!-- side bang -->
+    <path d="M30 38 Q34 28 44 26 Q42 32 36 36 Q33 38 30 42 Z" fill="url(#hair-${uid})"/>
+    <!-- scrunchie/hair tie -->
+    <circle cx="78" cy="36" r="3.5" fill="#ff8fa3"/>
+    <circle cx="78" cy="36" r="1.5" fill="#ffffff" opacity="0.5"/>
+    <!-- cheeks - rosy youthful -->
+    <ellipse cx="37" cy="52" rx="6" ry="4" fill="url(#cheek-${uid})"/>
+    <ellipse cx="63" cy="52" rx="6" ry="4" fill="url(#cheek-${uid})"/>
+    <!-- eyebrows - thin and friendly -->
+    <path d="M38 42 Q42 40 46 42" stroke="#4a2614" stroke-width="1.3" fill="none" stroke-linecap="round"/>
+    <path d="M54 42 Q58 40 62 42" stroke="#4a2614" stroke-width="1.3" fill="none" stroke-linecap="round"/>
+    <!-- eyes - big, friendly, with lashes -->
+    <ellipse cx="42" cy="48" rx="2.5" ry="3" fill="#4a2614"/>
+    <ellipse cx="58" cy="48" rx="2.5" ry="3" fill="#4a2614"/>
+    <!-- eye highlights -->
+    <circle cx="43" cy="47" r="1" fill="white"/>
+    <circle cx="59" cy="47" r="1" fill="white"/>
+    <circle cx="41" cy="49" r="0.4" fill="white"/>
+    <circle cx="57" cy="49" r="0.4" fill="white"/>
+    <!-- eyelashes - subtle -->
+    <path d="M40 45.5 L39 44" stroke="#4a2614" stroke-width="0.8" stroke-linecap="round"/>
+    <path d="M44 45.5 L45 44" stroke="#4a2614" stroke-width="0.8" stroke-linecap="round"/>
+    <path d="M56 45.5 L55 44" stroke="#4a2614" stroke-width="0.8" stroke-linecap="round"/>
+    <path d="M60 45.5 L61 44" stroke="#4a2614" stroke-width="0.8" stroke-linecap="round"/>
+    <!-- nose - tiny cute -->
+    <ellipse cx="50" cy="55" rx="1.5" ry="1.2" fill="#d4a080" opacity="0.5"/>
+    <!-- smile - happy and youthful -->
+    <path d="M43 60 Q50 65 57 60" stroke="#c44060" stroke-width="2" fill="none" stroke-linecap="round"/>
+    <!-- lips highlight -->
+    <path d="M46 62 Q50 64 54 62" stroke="#ff8fa3" stroke-width="0.8" fill="none" stroke-linecap="round" opacity="0.6"/>
+    <!-- small earring (stud) -->
+    <circle cx="28" cy="52" r="1.5" fill="#e8b86a"/>
+  </svg>`;
+}
+
+
+// ===================== Hero Illustrations =====================
+const heroSVG = {
+  mental_health: `<svg viewBox="0 0 400 160" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid slice" style="width:100%;height:100%">
+    <defs>
+      <linearGradient id="bg-mh" x1="0" x2="0" y2="1"><stop offset="0" stop-color="#fde5ec"/><stop offset="1" stop-color="#f5c8d5"/></linearGradient>
+      <linearGradient id="brain-g" x1="0" x2="1" y2="1"><stop offset="0" stop-color="#8b5a8c"/><stop offset="1" stop-color="#d97a8c"/></linearGradient>
+    </defs>
+    <rect width="400" height="160" fill="url(#bg-mh)"/>
+    <circle cx="70" cy="40" r="25" fill="#fff" opacity="0.5"/>
+    <circle cx="340" cy="120" r="35" fill="#fff" opacity="0.4"/>
+    <circle cx="60" cy="120" r="18" fill="#e8b86a" opacity="0.4"/>
+    <g transform="translate(160 30)">
+      <path d="M40 28 Q40 12 28 12 Q16 12 16 28 Q16 42 40 60 Q64 42 64 28 Q64 12 52 12 Q40 12 40 28 Z" fill="url(#brain-g)"/>
+      <g fill="#e8b86a">
+        <circle cx="10" cy="20" r="2"/>
+        <circle cx="80" cy="20" r="2.5"/>
+        <circle cx="75" cy="50" r="1.5"/>
+      </g>
+      <circle cx="40" cy="35" r="3" fill="white" opacity="0.6"/>
+    </g>
+    <path d="M0 145 Q100 135 200 142 Q300 148 400 140 L400 160 L0 160 Z" fill="#8b5a8c" opacity="0.15"/>
+  </svg>`,
+  families: `<svg viewBox="0 0 400 160" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid slice" style="width:100%;height:100%">
+    <defs><linearGradient id="bg-fam" x1="0" x2="0" y2="1"><stop offset="0" stop-color="#e8f3e0"/><stop offset="1" stop-color="#c5e0b8"/></linearGradient></defs>
+    <rect width="400" height="160" fill="url(#bg-fam)"/>
+    <circle cx="60" cy="40" r="25" fill="#fff" opacity="0.5"/>
+    <circle cx="340" cy="120" r="35" fill="#fff" opacity="0.5"/>
+    <g transform="translate(120 30)">
+      <circle cx="25" cy="25" r="14" fill="#8b5a8c"/>
+      <path d="M8 90 Q8 50 25 50 Q42 50 42 90 Z" fill="#8b5a8c"/>
+      <circle cx="22" cy="25" r="1.5" fill="#fff"/>
+      <circle cx="28" cy="25" r="1.5" fill="#fff"/>
+      <path d="M22 32 Q25 34 28 32" stroke="#fff" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+      <circle cx="80" cy="22" r="13" fill="#d97a8c"/>
+      <path d="M64 90 Q64 47 80 47 Q96 47 96 90 Z" fill="#d97a8c"/>
+      <circle cx="77" cy="22" r="1.5" fill="#fff"/>
+      <circle cx="83" cy="22" r="1.5" fill="#fff"/>
+      <path d="M77 29 Q80 31 83 29" stroke="#fff" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+      <circle cx="125" cy="32" r="10" fill="#e8b86a"/>
+      <path d="M114 90 Q114 55 125 55 Q136 55 136 90 Z" fill="#e8b86a"/>
+      <circle cx="122" cy="32" r="1.2" fill="#fff"/>
+      <circle cx="128" cy="32" r="1.2" fill="#fff"/>
+      <path d="M122 38 Q125 40 128 38" stroke="#fff" stroke-width="1.2" fill="none" stroke-linecap="round"/>
+      <path d="M53 35 Q50 30 47 32 Q44 30 41 32 Q38 35 41 40 L47 46 L53 40 Q56 35 53 35 Z" fill="#e84a6a"/>
+      <path d="M105 38 Q103 35 101 36 Q99 35 97 36 Q95 38 97 41 L101 45 L105 41 Q107 38 105 38 Z" fill="#e84a6a"/>
+    </g>
+  </svg>`,
+  teens: `<svg viewBox="0 0 400 160" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid slice" style="width:100%;height:100%">
+    <defs><linearGradient id="bg-tn" x1="0" x2="0" y2="1"><stop offset="0" stop-color="#fef0d9"/><stop offset="1" stop-color="#fdd9a8"/></linearGradient></defs>
+    <rect width="400" height="160" fill="url(#bg-tn)"/>
+    <circle cx="340" cy="50" r="30" fill="#fff" opacity="0.5"/>
+    <circle cx="50" cy="120" r="30" fill="#fff" opacity="0.4"/>
+    <g transform="translate(80 35)">
+      <circle cx="35" cy="28" r="14" fill="#8b5a8c"/>
+      <path d="M18 90 Q18 52 35 52 Q52 52 52 90 Z" fill="#8b5a8c"/>
+      <circle cx="32" cy="28" r="1.5" fill="#fff"/>
+      <circle cx="38" cy="28" r="1.5" fill="#fff"/>
+      <path d="M32 35 Q35 37 38 35" stroke="#fff" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+      <rect x="46" y="60" width="10" height="14" rx="2" fill="#3d2418"/>
+      <rect x="48" y="62" width="6" height="9" fill="#7cd0e8"/>
+      <circle cx="95" cy="25" r="14" fill="#d97a8c"/>
+      <path d="M78 90 Q78 49 95 49 Q112 49 112 90 Z" fill="#d97a8c"/>
+      <circle cx="92" cy="25" r="1.5" fill="#fff"/>
+      <circle cx="98" cy="25" r="1.5" fill="#fff"/>
+      <path d="M92 32 Q95 34 98 32" stroke="#fff" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+      <circle cx="160" cy="30" r="14" fill="#e8b86a"/>
+      <path d="M143 90 Q143 54 160 54 Q177 54 177 90 Z" fill="#e8b86a"/>
+      <circle cx="157" cy="30" r="1.5" fill="#fff"/>
+      <circle cx="163" cy="30" r="1.5" fill="#fff"/>
+      <path d="M157 37 Q160 39 163 37" stroke="#fff" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+      <path d="M147 27 Q160 14 173 27" stroke="#3d2418" stroke-width="3" fill="none"/>
+      <rect x="144" y="27" width="5" height="8" rx="2" fill="#3d2418"/>
+      <rect x="171" y="27" width="5" height="8" rx="2" fill="#3d2418"/>
+    </g>
+    <g fill="#8b5a8c" opacity="0.6">
+      <circle cx="290" cy="50" r="3"/>
+      <rect x="290" y="35" width="1.5" height="15"/>
+      <circle cx="310" cy="80" r="3"/>
+      <rect x="310" y="65" width="1.5" height="15"/>
+    </g>
+  </svg>`,
+  elderly: `<svg viewBox="0 0 400 160" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid slice" style="width:100%;height:100%">
+    <defs><linearGradient id="bg-el" x1="0" x2="0" y2="1"><stop offset="0" stop-color="#fef0d9"/><stop offset="1" stop-color="#fae5c8"/></linearGradient></defs>
+    <rect width="400" height="160" fill="url(#bg-el)"/>
+    <circle cx="60" cy="40" r="25" fill="#fff" opacity="0.5"/>
+    <circle cx="350" cy="120" r="35" fill="#fff" opacity="0.4"/>
+    <g transform="translate(130 25)">
+      <circle cx="50" cy="22" r="15" fill="#d4a8b8"/>
+      <path d="M37 22 Q35 8 50 8 Q65 8 63 22 Q60 18 50 18 Q40 18 37 22 Z" fill="#f5f0f5"/>
+      <path d="M30 95 Q30 50 50 50 Q70 50 70 95 Z" fill="#8b5a8c"/>
+      <circle cx="44" cy="22" r="3" fill="none" stroke="#3d2418" stroke-width="1.5"/>
+      <circle cx="56" cy="22" r="3" fill="none" stroke="#3d2418" stroke-width="1.5"/>
+      <line x1="47" y1="22" x2="53" y2="22" stroke="#3d2418" stroke-width="1.5"/>
+      <path d="M44 30 Q50 33 56 30" stroke="#a04050" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+      <path d="M75 40 Q72 38 75 35 Q78 38 75 40" fill="none" stroke="#8b5a3a" stroke-width="3" stroke-linecap="round"/>
+      <line x1="75" y1="40" x2="80" y2="95" stroke="#8b5a3a" stroke-width="3" stroke-linecap="round"/>
+      <g transform="translate(95 50)">
+        <ellipse cx="10" cy="10" rx="14" ry="9" fill="#f5cba8"/>
+        <ellipse cx="6" cy="6" rx="3" ry="6" fill="#f5cba8"/>
+        <ellipse cx="11" cy="4" rx="3" ry="7" fill="#f5cba8"/>
+        <ellipse cx="16" cy="6" rx="3" ry="6" fill="#f5cba8"/>
+      </g>
+      <path d="M115 18 Q113 12 109 14 Q105 12 103 18 Q103 24 115 32 Q127 24 127 18 Q125 12 121 14 Q117 12 115 18 Z" fill="#e84a6a"/>
+    </g>
+  </svg>`,
+  haruv: `<svg viewBox="0 0 400 160" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid slice" style="width:100%;height:100%">
+    <defs>
+      <linearGradient id="bg-h" x1="0" x2="0" y2="1"><stop offset="0" stop-color="#e8e0f0"/><stop offset="1" stop-color="#d4c8e0"/></linearGradient>
+      <linearGradient id="shield-g" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#8b5a8c"/><stop offset="1" stop-color="#5a3a5c"/></linearGradient>
+    </defs>
+    <rect width="400" height="160" fill="url(#bg-h)"/>
+    <circle cx="60" cy="40" r="25" fill="#fff" opacity="0.5"/>
+    <circle cx="340" cy="120" r="35" fill="#fff" opacity="0.5"/>
+    <g transform="translate(150 20)">
+      <path d="M50 8 Q15 8 15 35 Q15 75 50 100 Q85 75 85 35 Q85 8 50 8 Z" fill="url(#shield-g)"/>
+      <circle cx="50" cy="38" r="10" fill="#fde5ec"/>
+      <path d="M38 75 Q38 50 50 50 Q62 50 62 75 Z" fill="#fde5ec"/>
+      <circle cx="47" cy="38" r="1.3" fill="#3d2418"/>
+      <circle cx="53" cy="38" r="1.3" fill="#3d2418"/>
+      <path d="M46 44 Q50 47 54 44" stroke="#a04050" stroke-width="1.2" fill="none" stroke-linecap="round"/>
+      <path d="M0 30 Q-2 26 -5 28 Q-8 26 -10 30 Q-10 35 0 42 Q10 35 10 30 Q8 26 5 28 Q2 26 0 30 Z" fill="#e84a6a"/>
+      <path d="M100 30 Q98 26 95 28 Q92 26 90 30 Q90 35 100 42 Q110 35 110 30 Q108 26 105 28 Q102 26 100 30 Z" fill="#e84a6a"/>
+    </g>
+  </svg>`,
+  multi: `<svg viewBox="0 0 400 160" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid slice" style="width:100%;height:100%">
+    <defs><linearGradient id="bg-mu" x1="0" x2="0" y2="1"><stop offset="0" stop-color="#fde5ec"/><stop offset="1" stop-color="#fef0d9"/></linearGradient></defs>
+    <rect width="400" height="160" fill="url(#bg-mu)"/>
+    <g transform="translate(100 30)">
+      <path d="M0 0 L40 0 Q40 10 50 10 Q60 10 60 0 L100 0 L100 40 Q90 40 90 50 Q90 60 100 60 L100 100 L60 100 Q60 90 50 90 Q40 90 40 100 L0 100 Z" fill="#8b5a8c"/>
+      <path d="M110 0 L150 0 Q150 10 160 10 Q170 10 170 0 L210 0 L210 40 Q200 40 200 50 Q200 60 210 60 L210 100 L170 100 Q170 90 160 90 Q150 90 150 100 L110 100 Z" fill="#d97a8c"/>
+      <circle cx="50" cy="50" r="22" fill="#fef0d9"/>
+      <circle cx="44" cy="46" r="2" fill="#3d2418"/>
+      <circle cx="56" cy="46" r="2" fill="#3d2418"/>
+      <path d="M42 56 Q50 62 58 56" stroke="#a04050" stroke-width="2" fill="none" stroke-linecap="round"/>
+      <circle cx="160" cy="50" r="22" fill="#fef0d9"/>
+      <circle cx="154" cy="46" r="2" fill="#3d2418"/>
+      <circle cx="166" cy="46" r="2" fill="#3d2418"/>
+      <path d="M152 56 Q160 62 168 56" stroke="#a04050" stroke-width="2" fill="none" stroke-linecap="round"/>
+    </g>
+    <g fill="#e8b86a">
+      <circle cx="50" cy="40" r="3"/>
+      <circle cx="370" cy="120" r="4"/>
+      <circle cx="350" cy="40" r="2.5"/>
+    </g>
+  </svg>`,
+  health: `<svg viewBox="0 0 400 160" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid slice" style="width:100%;height:100%">
+    <defs><linearGradient id="bg-hl" x1="0" x2="0" y2="1"><stop offset="0" stop-color="#d9eef5"/><stop offset="1" stop-color="#b8dde8"/></linearGradient></defs>
+    <rect width="400" height="160" fill="url(#bg-hl)"/>
+    <rect x="0" y="100" width="400" height="60" fill="#a8d4e0" opacity="0.5"/>
+    <circle cx="60" cy="40" r="25" fill="#fff" opacity="0.6"/>
+    <g transform="translate(140 30)">
+      <rect x="0" y="25" width="120" height="80" rx="6" fill="#fff" stroke="#8b5a8c" stroke-width="2.5"/>
+      <path d="M60 0 L60 25 L0 25 L0 18 Z" fill="#8b5a8c"/>
+      <path d="M60 0 L60 25 L120 25 L120 18 Z" fill="#8b5a8c"/>
+      <g transform="translate(50 35)">
+        <rect x="-3" y="0" width="6" height="20" rx="1" fill="#e84a6a"/>
+        <rect x="-10" y="7" width="20" height="6" rx="1" fill="#e84a6a"/>
+      </g>
+      <rect x="10" y="65" width="15" height="15" rx="2" fill="#d9eef5"/>
+      <rect x="32" y="65" width="15" height="15" rx="2" fill="#d9eef5"/>
+      <rect x="73" y="65" width="15" height="15" rx="2" fill="#d9eef5"/>
+      <rect x="95" y="65" width="15" height="15" rx="2" fill="#d9eef5"/>
+      <rect x="10" y="85" width="15" height="15" rx="2" fill="#d9eef5"/>
+      <rect x="32" y="85" width="15" height="15" rx="2" fill="#d9eef5"/>
+      <rect x="73" y="85" width="15" height="15" rx="2" fill="#d9eef5"/>
+      <rect x="95" y="85" width="15" height="15" rx="2" fill="#d9eef5"/>
+      <rect x="52" y="80" width="16" height="25" rx="2" fill="#8b5a8c"/>
+    </g>
+  </svg>`,
+  trauma: `<svg viewBox="0 0 400 160" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid slice" style="width:100%;height:100%">
+    <defs><linearGradient id="bg-tr" x1="0" x2="0" y2="1"><stop offset="0" stop-color="#fde5ec"/><stop offset="1" stop-color="#f5cba8"/></linearGradient></defs>
+    <rect width="400" height="160" fill="url(#bg-tr)"/>
+    <circle cx="60" cy="40" r="25" fill="#fff" opacity="0.5"/>
+    <g transform="translate(150 25)">
+      <path d="M5 80 Q-5 80 -5 70 Q-5 50 15 45 L20 70 Q22 80 18 82 Z" fill="#f5cba8"/>
+      <path d="M95 80 Q105 80 105 70 Q105 50 85 45 L80 70 Q78 80 82 82 Z" fill="#f5cba8"/>
+      <path d="M50 30 Q50 12 35 12 Q20 12 20 30 Q20 50 50 75 Q80 50 80 30 Q80 12 65 12 Q50 12 50 30 Z" fill="#e84a6a"/>
+      <path d="M22 42 L32 42 L36 32 L42 52 L48 38 L55 42 L78 42" stroke="#fff" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+      <g fill="#e8b86a">
+        <circle cx="0" cy="20" r="2.5"/>
+        <circle cx="100" cy="25" r="2.5"/>
+        <circle cx="50" cy="0" r="2"/>
+      </g>
+    </g>
+  </svg>`,
+  rehab: `<svg viewBox="0 0 400 160" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid slice" style="width:100%;height:100%">
+    <defs><linearGradient id="bg-rh" x1="0" x2="0" y2="1"><stop offset="0" stop-color="#e0eee8"/><stop offset="1" stop-color="#c0dccc"/></linearGradient></defs>
+    <rect width="400" height="160" fill="url(#bg-rh)"/>
+    <circle cx="60" cy="40" r="25" fill="#fff" opacity="0.5"/>
+    <circle cx="340" cy="120" r="35" fill="#fff" opacity="0.4"/>
+    <g transform="translate(150 25)">
+      <circle cx="40" cy="90" r="25" fill="none" stroke="#8b5a8c" stroke-width="4"/>
+      <circle cx="40" cy="90" r="6" fill="#8b5a8c"/>
+      <line x1="40" y1="65" x2="40" y2="115" stroke="#8b5a8c" stroke-width="2"/>
+      <line x1="15" y1="90" x2="65" y2="90" stroke="#8b5a8c" stroke-width="2"/>
+      <line x1="22" y1="72" x2="58" y2="108" stroke="#8b5a8c" stroke-width="2"/>
+      <line x1="22" y1="108" x2="58" y2="72" stroke="#8b5a8c" stroke-width="2"/>
+      <path d="M30 70 L30 60 L50 60 L50 70" stroke="#8b5a8c" stroke-width="3" fill="none"/>
+      <circle cx="50" cy="35" r="12" fill="#f5cba8"/>
+      <path d="M40 33 Q40 22 50 22 Q60 22 60 33 Q60 36 58 36 Q55 32 50 32 Q45 32 42 36 Q40 36 40 33 Z" fill="#3d2418"/>
+      <circle cx="47" cy="36" r="1.3" fill="#3d2418"/>
+      <circle cx="53" cy="36" r="1.3" fill="#3d2418"/>
+      <path d="M46 42 Q50 45 54 42" stroke="#a04050" stroke-width="1.2" fill="none" stroke-linecap="round"/>
+      <path d="M38 60 Q38 47 50 47 Q62 47 62 60 L62 70 L38 70 Z" fill="#d97a8c"/>
+      <path d="M62 55 Q75 45 80 30 Q82 25 78 23 Q73 22 71 30 Q67 42 60 50 Z" fill="#f5cba8"/>
+      <g transform="translate(85 15)">
+        <path d="M0 -8 L2 -3 L7 -2 L3 2 L4 8 L0 5 L-4 8 L-3 2 L-7 -2 L-2 -3 Z" fill="#e8b86a"/>
+      </g>
+    </g>
+  </svg>`,
+  comm_jer: `<svg viewBox="0 0 400 160" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid slice" style="width:100%;height:100%">
+    <defs><linearGradient id="bg-cj" x1="0" x2="0" y2="1"><stop offset="0" stop-color="#fde9d4"/><stop offset="1" stop-color="#f5cba8"/></linearGradient></defs>
+    <rect width="400" height="160" fill="url(#bg-cj)"/>
+    <circle cx="340" cy="35" r="20" fill="#e8b86a"/>
+    <g stroke="#e8b86a" stroke-width="2.5" stroke-linecap="round">
+      <line x1="340" y1="8" x2="340" y2="14"/>
+      <line x1="340" y1="56" x2="340" y2="62"/>
+      <line x1="313" y1="35" x2="319" y2="35"/>
+      <line x1="361" y1="35" x2="367" y2="35"/>
+      <line x1="321" y1="16" x2="325" y2="20"/>
+      <line x1="355" y1="50" x2="359" y2="54"/>
+    </g>
+    <g transform="translate(40 30)">
+      <rect x="0" y="50" width="55" height="80" fill="#f5d8a3"/>
+      <path d="M-3 50 L27 25 L57 50 Z" fill="#d97a8c"/>
+      <rect x="8" y="65" width="10" height="12" rx="2" fill="#8b5a8c"/>
+      <rect x="36" y="65" width="10" height="12" rx="2" fill="#8b5a8c"/>
+      <rect x="8" y="85" width="10" height="12" rx="2" fill="#8b5a8c"/>
+      <rect x="36" y="85" width="10" height="12" rx="2" fill="#8b5a8c"/>
+      <rect x="75" y="60" width="65" height="70" fill="#fdf0db"/>
+      <ellipse cx="107" cy="60" rx="35" ry="20" fill="#e8b86a"/>
+      <rect x="85" y="80" width="10" height="14" rx="5" fill="#8b5a8c"/>
+      <rect x="102" y="80" width="10" height="14" rx="5" fill="#8b5a8c"/>
+      <rect x="119" y="80" width="10" height="14" rx="5" fill="#8b5a8c"/>
+      <rect x="85" y="100" width="10" height="14" rx="5" fill="#8b5a8c"/>
+      <rect x="102" y="100" width="10" height="14" rx="5" fill="#8b5a8c"/>
+      <rect x="119" y="100" width="10" height="14" rx="5" fill="#8b5a8c"/>
+      <rect x="155" y="40" width="40" height="90" fill="#d97a8c"/>
+      <path d="M152 40 L175 20 L198 40 Z" fill="#8b5a8c"/>
+      <rect x="163" y="55" width="8" height="12" rx="4" fill="#fdf0db"/>
+      <rect x="179" y="55" width="8" height="12" rx="4" fill="#fdf0db"/>
+      <rect x="163" y="75" width="8" height="12" rx="4" fill="#fdf0db"/>
+      <rect x="179" y="75" width="8" height="12" rx="4" fill="#fdf0db"/>
+      <rect x="163" y="95" width="8" height="12" rx="4" fill="#fdf0db"/>
+      <rect x="179" y="95" width="8" height="12" rx="4" fill="#fdf0db"/>
+      <rect x="210" y="55" width="50" height="75" fill="#8b5a8c"/>
+      <rect x="220" y="70" width="9" height="12" rx="2" fill="#fdf0db"/>
+      <rect x="240" y="70" width="9" height="12" rx="2" fill="#fdf0db"/>
+      <rect x="220" y="90" width="9" height="12" rx="2" fill="#fdf0db"/>
+      <rect x="240" y="90" width="9" height="12" rx="2" fill="#fdf0db"/>
+      <rect x="220" y="110" width="9" height="12" rx="2" fill="#fdf0db"/>
+      <rect x="240" y="110" width="9" height="12" rx="2" fill="#fdf0db"/>
+    </g>
+  </svg>`,
+  comm_policy: `<svg viewBox="0 0 400 160" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid slice" style="width:100%;height:100%">
+    <defs><linearGradient id="bg-cp" x1="0" x2="0" y2="1"><stop offset="0" stop-color="#e0e5f0"/><stop offset="1" stop-color="#c8d4e8"/></linearGradient></defs>
+    <rect width="400" height="160" fill="url(#bg-cp)"/>
+    <circle cx="70" cy="40" r="25" fill="#fff" opacity="0.5"/>
+    <circle cx="340" cy="130" r="30" fill="#fff" opacity="0.4"/>
+    <g transform="translate(160 25)">
+      <rect x="25" y="105" width="35" height="10" rx="3" fill="#8b5a8c"/>
+      <rect x="35" y="55" width="15" height="55" fill="#8b5a8c"/>
+      <circle cx="42.5" cy="55" r="6" fill="#e8b86a"/>
+      <rect x="0" y="50" width="85" height="6" rx="3" fill="#8b5a8c"/>
+      <line x1="10" y1="56" x2="10" y2="78" stroke="#8b5a8c" stroke-width="2"/>
+      <path d="M-2 78 L22 78 L18 92 L2 92 Z" fill="#d97a8c"/>
+      <line x1="75" y1="56" x2="75" y2="78" stroke="#8b5a8c" stroke-width="2"/>
+      <path d="M63 78 L87 78 L83 92 L67 92 Z" fill="#d97a8c"/>
+      <path d="M10 84 Q9 81 7 82 Q5 81 5 84 Q5 87 10 89 Q15 87 15 84 Q15 81 13 82 Q11 81 10 84 Z" fill="#fff"/>
+      <path d="M75 84 Q74 81 72 82 Q70 81 70 84 Q70 87 75 89 Q80 87 80 84 Q80 81 78 82 Q76 81 75 84 Z" fill="#fff"/>
+    </g>
+  </svg>`,
+  comm_minorities: `<svg viewBox="0 0 400 160" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid slice" style="width:100%;height:100%">
+    <defs><linearGradient id="bg-cm" x1="0" x2="0" y2="1"><stop offset="0" stop-color="#fde5ec"/><stop offset="1" stop-color="#e0eee8"/></linearGradient></defs>
+    <rect width="400" height="160" fill="url(#bg-cm)"/>
+    <circle cx="60" cy="40" r="25" fill="#fff" opacity="0.5"/>
+    <circle cx="340" cy="120" r="30" fill="#fff" opacity="0.4"/>
+    <g transform="translate(100 30)">
+      <circle cx="25" cy="35" r="13" fill="#8b5a8c"/>
+      <path d="M11 95 Q11 60 25 60 Q39 60 39 95 Z" fill="#8b5a8c"/>
+      <circle cx="22" cy="35" r="1.5" fill="#fff"/>
+      <circle cx="28" cy="35" r="1.5" fill="#fff"/>
+      <path d="M22 42 Q25 44 28 42" stroke="#fff" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+      <circle cx="75" cy="30" r="13" fill="#d97a8c"/>
+      <path d="M61 95 Q61 55 75 55 Q89 55 89 95 Z" fill="#d97a8c"/>
+      <circle cx="72" cy="30" r="1.5" fill="#fff"/>
+      <circle cx="78" cy="30" r="1.5" fill="#fff"/>
+      <path d="M72 37 Q75 39 78 37" stroke="#fff" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+      <circle cx="125" cy="33" r="13" fill="#e8b86a"/>
+      <path d="M111 95 Q111 58 125 58 Q139 58 139 95 Z" fill="#e8b86a"/>
+      <circle cx="122" cy="33" r="1.5" fill="#fff"/>
+      <circle cx="128" cy="33" r="1.5" fill="#fff"/>
+      <path d="M122 40 Q125 42 128 40" stroke="#fff" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+      <circle cx="175" cy="28" r="13" fill="#5e9a8a"/>
+      <path d="M161 95 Q161 53 175 53 Q189 53 189 95 Z" fill="#5e9a8a"/>
+      <circle cx="172" cy="28" r="1.5" fill="#fff"/>
+      <circle cx="178" cy="28" r="1.5" fill="#fff"/>
+      <path d="M172 35 Q175 37 178 35" stroke="#fff" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+      <path d="M40 75 Q50 70 60 75 M90 73 Q100 68 110 73 M140 73 Q150 68 160 73" stroke="#fff" stroke-width="3" fill="none" stroke-linecap="round"/>
+      <g fill="#e84a6a">
+        <path d="M50 15 Q48 11 45 13 Q42 11 40 15 Q40 19 45 23 Q50 19 50 15 Z"/>
+        <path d="M100 10 Q98 6 95 8 Q92 6 90 10 Q90 14 95 18 Q100 14 100 10 Z"/>
+        <path d="M150 14 Q148 10 145 12 Q142 10 140 14 Q140 18 145 22 Q150 18 150 14 Z"/>
+      </g>
+    </g>
+  </svg>`
+};
+
+// ===================== Data =====================
+const data = {
+  general: {
+    link: "https://sw.huji.ac.il/book/%D7%94%D7%9B%D7%A9%D7%A8%D7%94-%D7%9E%D7%A7%D7%A6%D7%95%D7%A2%D7%99%D7%AA-0",
+    content: `<h4>מידע כללי על המדור</h4>
+    <p>ההכשרה המקצועית מתבצעת בליווי הדרכה אישית צמודה של עובדים סוציאליים מנוסים, המוכשרים על ידי בית הספר כמדריכי סטודנטים.</p>
+    <p>המדור משבץ, מלווה ותומך בסטודנטים בצורה מקיפה תוך פיקוח על קליטתם בארגונים השונים.</p>
+    <div class="section-label"><i class="ti ti-list-check"></i> שלושת מרכיבי לימודי השדה</div>
+    <ul>
+      <li>עבודה מעשית במסגרת מקום ההכשרה</li>
+      <li>הדרכה אישית במקומות ההכשרה או באוניברסיטה</li>
+      <li>סדנה דו-שבועית או חודשית בהנחיית רכז/ת המרכז</li>
+    </ul>
+    <div class="section-label"><i class="ti ti-school"></i> היקף ההכשרה</div>
+    <p>36 נ"ז בלימודי הכשרה מקצועית — שנה ב': 12 נ"ז + 4 בסדנה. שנה ג': 16 נ"ז + 4 בסדנה.</p>
+    <div class="note-box">
+      <i class="ti ti-alert-circle"></i>
+      <span>הנוכחות חובה — הציון "השתתפות פעילה" הוא תנאי לקבלת ציון "עובר" בהכשרה מקצועית.</span>
+    </div>`
+  },
+  partani: {
+    description: `<h4>המגמה הפרטנית</h4>
+    <p>רכישת ידע עיוני והכשרה מקצועית בעבודה עם יחידים ומשפחות.</p>
+    <p style="font-size: 13px; color: #8a7a85;">בחרו מרכז למידה לקבלת מידע מורחב:</p>`,
+    centers: [
+      { id: "mental_health", name: "בריאות הנפש" },
+      { id: "families", name: "משפחות בסיכון" },
+      { id: "teens", name: "טיפול במתבגרים" },
+      { id: "elderly", name: "אתגרי הטיפול בגיל הזקנה" },
+      { id: "haruv", name: "קמפוס חרוב — ילדים נפגעי התעללות" },
+      { id: "multi", name: "מרכז רב-תחומי ע\"ש גב' פראו כץ" },
+      { id: "health", name: "תחום הבריאות — הדסה ושערי צדק" },
+      { id: "trauma", name: "טראומה, חוסן והתמודדות" },
+      { id: "rehab", name: "שיקום ובריאות בקהילה" }
+    ]
+  },
+  kehilatit: {
+    description: `<h4>המגמה הקהילתית</h4>
+    <p>לימודי התמחות בעבודה עם קבוצות וארגונים והכשרה לתפקידים בשירותים חברתיים ובמינהל.</p>
+    <p>הסטודנטים מתנסים ביסודות העבודה הסוציאלית הקהילתית: בניית פרופיל קהילתי, איתור צרכים, אבחון בעיה חברתית, גיוס וארגון אנשים והפעלת תוכניות לשינוי חברתי.</p>
+    <p style="font-size: 13px; color: #8a7a85;">בחרו מרכז למידה קהילתי:</p>`,
+    centers: [
+      { id: "comm_jer", name: "מרכז קהילתי — שכונות ירושלים" },
+      { id: "comm_policy", name: "מדיניות ושינוי חברתי" },
+      { id: "comm_minorities", name: "אוכלוסיות מודרות ומיעוטים" }
+    ]
+  },
+  centersInfo: {
+    mental_health: {
+      name: "מרכז למידה לבריאות הנפש",
+      icon: "mental_health",
+      link: "https://sw.huji.ac.il/book/%D7%9E%D7%A8%D7%9B%D7%96-%D7%9C%D7%9E%D7%99%D7%93%D7%94-%D7%9C%D7%98%D7%99%D7%A4%D7%95%D7%9C-%D7%91%D7%9E%D7%AA%D7%91%D7%92%D7%A8%D7%99%D7%9D-0",
+      desc: "המרכז מכשיר סטודנטים לעבודה עם אוכלוסיות הסובלות ממצוקות נפשיות, מהתערבות מוקדמת ועד טיפול במצבי משבר. ההכשרה כוללת היכרות עם גישות טיפוליות מגוונות, אבחון פסיכוסוציאלי, התערבות פרטנית ומשפחתית, ועבודה בצוות רב-מקצועי.",
+      places: [
+        { icon: "ti-building-hospital", name: "מרפאות בריאות הנפש בקהילה" },
+        { icon: "ti-bed", name: "מחלקות פסיכיאטריות (איתנים, כפר שאול)" },
+        { icon: "ti-sun", name: "מרכזי יום פסיכיאטריים" },
+        { icon: "ti-home-heart", name: "שירותי שיקום נפשי בקהילה" },
+        { icon: "ti-stethoscope", name: "מרכזי בריאות הנפש בקופות החולים" }
+      ],
+      coordinator: "גברת נעמה אשל",
+      phone: "054-7804903",
+      email: "naama.levy@mail.huji.ac.il"
+    },
+    families: {
+      name: "מרכז למידה למשפחות בסיכון",
+      icon: "families",
+      link: "https://sw.huji.ac.il/book/%D7%9E%D7%A8%D7%9B%D7%96-%D7%9C%D7%9E%D7%99%D7%93%D7%94-%D7%9C%D7%9E%D7%A9%D7%A4%D7%97%D7%95%D7%AA-%D7%91%D7%A1%D7%99%D7%9B%D7%95%D7%9F",
+      desc: "המרכז מכשיר סטודנטים לעבודה עם משפחות במצבי סיכון מורכבים. ההכשרה כוללת התערבויות מניעתיות, ליווי משפחות, אבחון צרכים, עבודה רב-מקצועית, וטיפול תוך הסתכלות מערכתית על המשפחה.",
+      places: [
+        { icon: "ti-building-community", name: "מחלקות לשירותים חברתיים בעיריית ירושלים" },
+        { icon: "ti-baby-carriage", name: "מרכזי הורים-ילדים ומרכזי קשר" },
+        { icon: "ti-hand-stop", name: "עמותות לסיוע למשפחות" },
+        { icon: "ti-armchair", name: "תחנות לטיפול משפחתי" },
+        { icon: "ti-home", name: "פנימיות וכפרי נוער" }
+      ],
+      coordinator: "גברת שרית חזן-אברמסון",
+      phone: "052-5238949",
+      email: "sarithazan8@gmail.com"
+    },
+    teens: {
+      name: "מרכז למידה לטיפול במתבגרים",
+      icon: "teens",
+      link: "https://sw.huji.ac.il/book/%D7%9E%D7%A8%D7%9B%D7%96-%D7%9C%D7%9E%D7%99%D7%93%D7%94-%D7%9C%D7%98%D7%99%D7%A4%D7%95%D7%9C-%D7%91%D7%9E%D7%AA%D7%91%D7%92%D7%A8%D7%99%D7%9D",
+      desc: "המרכז מתמקד בעבודה עם בני נוער ומתבגרים במגוון מסגרות. גישת ההתערבות טיפולית-פרטנית, עם דגש על פיתוח מודעות עצמית של הסטודנט והתייחסות להעברה והעברה נגדית בקשר הטיפולי.",
+      places: [
+        { icon: "ti-building-community", name: "שירותי רווחה — יחידות לנוער" },
+        { icon: "ti-mood-kid", name: "מרפאות בריאות הנפש לילד ולנוער" },
+        { icon: "ti-id", name: "קציני ביקור סדיר (קב\"סים)" },
+        { icon: "ti-gavel", name: "שירות מבחן לנוער" },
+        { icon: "ti-school", name: "ייעוץ ומחנכות בבתי ספר" },
+        { icon: "ti-shield", name: "לשכת גיוס וקב\"ן בצה\"ל" }
+      ],
+      coordinator: "גברת בלה בן גרשון",
+      phone: "050-6242216",
+      email: "belka.bg@gmail.com"
+    },
+    elderly: {
+      name: "מרכז למידה לאתגרי הטיפול בגיל הזקנה",
+      icon: "elderly",
+      link: "https://sw.huji.ac.il/book/%D7%9E%D7%A8%D7%9B%D7%96-%D7%9C%D7%9E%D7%99%D7%93%D7%94-%D7%90%D7%AA%D7%92%D7%A8%D7%99-%D7%94%D7%98%D7%99%D7%A4%D7%95%D7%9C-%D7%91%D7%92%D7%99%D7%9C-%D7%94%D7%96%D7%A7%D7%A0%D7%94",
+      desc: "המרכז מאפשר ללמוד את מיומנויות המקצוע באמצעות עבודה עם קשישים בקהילה ובמוסדות, ועם בני משפחותיהם. הסוגיות כוללות אבדן, מחלות כרוניות, ירידה תפקודית, פרישה, מעבר לסידור מוסדי, בדידות, דיכאון, ירידה שכלית ומצוקה כלכלית.",
+      places: [
+        { icon: "ti-building-community", name: "האגף לשירותי רווחה — עיריית ירושלים" },
+        { icon: "ti-building", name: "בתי אבות ודיור מוגן" },
+        { icon: "ti-sun", name: "מרכזי יום לקשישים" },
+        { icon: "ti-heart", name: "אשל — האגודה לתכנון שירותים לזקן" },
+        { icon: "ti-bed", name: "מחלקות גריאטריות בבתי חולים" }
+      ],
+      coordinator: "גברת פדות ביר",
+      phone: "052-6157689",
+      email: "pdutbi@gmail.com"
+    },
+    haruv: {
+      name: "מרכז הלמידה בקמפוס חרוב",
+      subtitle: "לילדים נפגעי התעללות",
+      icon: "haruv",
+      link: "https://sw.huji.ac.il/book/%D7%9E%D7%A8%D7%9B%D7%96-%D7%94%D7%9C%D7%9E%D7%99%D7%93%D7%94-%D7%91%D7%A7%D7%9E%D7%A4%D7%95%D7%91-%D7%97%D7%A8%D7%95%D7%91-%D7%9C%D7%99%D7%9C%D7%93%D7%99%D7%9D-%D7%A0%D7%A4%D7%92%D7%A2%D7%99-%D7%94%D7%AA%D7%A2%D7%9C%D7%9C%D7%95%D7%AA",
+      desc: "המרכז מתמחה בהכשרה לעבודה עם ילדים ובני נוער נפגעי התעללות והזנחה. ההכשרה מתקיימת בקמפוס חרוב לילדים בהר הצופים — מרכז ידע מוביל בארץ בתחום הגנת הילד.",
+      places: [
+        { icon: "ti-shield-heart", name: "מרכזי הגנה לילדים" },
+        { icon: "ti-scale", name: "המועצה לשלום הילד" },
+        { icon: "ti-search", name: "יחידות חקירות ילדים" },
+        { icon: "ti-first-aid-kit", name: "מרכזי טיפול בנפגעי תקיפה מינית" },
+        { icon: "ti-home-heart", name: "פנימיות טיפוליות" }
+      ],
+      coordinator: "גברת שוש תוג'מן",
+      phone: "050-2866640",
+      email: "shosh@haruv.org.il"
+    },
+    multi: {
+      name: "מרכז למידה רב-תחומי",
+      subtitle: "ע\"ש גב' פראו כץ — תקו\"ן, התמכרויות ושירותים ייחודיים",
+      icon: "multi",
+      link: "https://sw.huji.ac.il/sites/default/files/s-w/files/rb_tkhvmy_tshpb.pdf",
+      desc: "המרכז מאגד סוכנויות העוסקות באוכלוסיות מגוונות — בני נוער ומבוגרים, בני משפחה של מכורים, עבריינים, פליטים ומבקשי מקלט, ואוכלוסיות מודרות ומנוכרות חברתית.",
+      places: [
+        { icon: "ti-building-bridge", name: "של\"מ — שירות למכורים ואסירים משוחררים" },
+        { icon: "ti-sun", name: "מרכזי יום וקהילות טיפוליות" },
+        { icon: "ti-plane", name: "שירות עם פליטים ומבקשי מקלט" },
+        { icon: "ti-home-2", name: "מרכזים לטיפול בצעירים חסרי בית" },
+        { icon: "ti-building-community", name: "יחידות עירוניות לטיפול בהתמכרויות" },
+        { icon: "ti-briefcase", name: "פרויקטים תעסוקתיים" }
+      ],
+      note: "יידרש לעיתים יום הכשרה בשעות אחה\"צ עד 18:00.",
+      coordinator: "מר עצי קרצ'מר",
+      phone: "054-9299616",
+      email: "amietty@walla.com"
+    },
+    health: {
+      name: "מרכז למידה בתחום הבריאות",
+      subtitle: "בתי החולים האוניברסיטאיים הדסה ושערי צדק",
+      icon: "health",
+      link: "https://sw.huji.ac.il/book/%D7%9E%D7%A8%D7%9B%D7%96-%D7%9C%D7%9E%D7%99%D7%93%D7%94-%D7%91%D7%A8%D7%99%D7%90%D7%95%D7%AA-%D7%91%D7%AA%D7%99-%D7%94%D7%97%D7%95%D7%9C%D7%99%D7%9D-%D7%94%D7%90%D7%95%D7%A0%D7%99%D7%91%D7%A8%D7%A1%D7%99%D7%98%D7%90%D7%99%D7%99%D7%9D-%D7%A9%D7%9C-%D7%94%D7%93%D7%A1%D7%94",
+      desc: "המרכז פועל בבתי החולים האוניברסיטאיים הדסה ושערי צדק. הסטודנטים מתנסים בעבודה סוציאלית רפואית עם חולים ובני משפחותיהם בהתמודדות עם מחלה, אשפוז, שיקום וסיום חיים — כחלק מצוות רב-מקצועי.",
+      places: [
+        { icon: "ti-building-hospital", name: "הדסה עין כרם — פנימיות ואונקולוגיה" },
+        { icon: "ti-building-hospital", name: "הדסה הר הצופים" },
+        { icon: "ti-building-hospital", name: "המרכז הרפואי שערי צדק" },
+        { icon: "ti-baby-carriage", name: "מחלקות יולדות וגיל הרך" },
+        { icon: "ti-accessible", name: "מחלקות שיקום וטיפול תומך" }
+      ],
+      note: "נדרשים אישורי חיסונים, מנטו, רישום פלילי, ולגברים אישור על אי-עבריינות מין.",
+      coordinator: "פרטים יימסרו ע\"י המדור",
+      phone: "02-5882105",
+      email: "miribe@savion.huji.ac.il"
+    },
+    trauma: {
+      name: "מרכז למידה טראומה, חוסן והתמודדות",
+      icon: "trauma",
+      link: "https://sw.huji.ac.il/book/%D7%94%D7%9B%D7%A9%D7%A8%D7%94-%D7%9E%D7%A7%D7%A6%D7%95%D7%A2%D7%99%D7%AA-0",
+      desc: "המרכז מתמקד בעבודה עם אוכלוסיות שחוו טראומה ובפיתוח חוסן אישי וקהילתי. הסטודנטים נחשפים לגישות התערבות מבוססות-טראומה, עבודה במצבי חירום וליווי לטווח ארוך.",
+      places: [
+        { icon: "ti-first-aid-kit", name: "נט\"ל — נפגעי טראומה על רקע לאומי" },
+        { icon: "ti-heart-handshake", name: "המרכז הישראלי לטיפול בפסיכוטראומה" },
+        { icon: "ti-alert-triangle", name: "יחידות חירום ברווחה" },
+        { icon: "ti-shield", name: "ארגונים לנפגעי טרור ומלחמה" },
+        { icon: "ti-shield-heart", name: "מרכזי טיפול לנפגעי תקיפה מינית" }
+      ],
+      coordinator: "פרטים יימסרו ע\"י המדור",
+      phone: "02-5882105",
+      email: "miribe@savion.huji.ac.il"
+    },
+    rehab: {
+      name: "מרכז למידה: שיקום ובריאות בקהילה",
+      subtitle: "התמודדות עם מוגבלות וחולי",
+      icon: "rehab",
+      link: "https://sw.huji.ac.il/book/%D7%9E%D7%A8%D7%9B%D7%96-%D7%9C%D7%9E%D7%99%D7%93%D7%94-%D7%94%D7%AA%D7%9E%D7%95%D7%93%D7%93%D7%95%D7%AA-%D7%A2%D7%9D-%D7%9E%D7%95%D7%92%D7%91%D7%9C%D7%95%D7%AA-%D7%95%D7%97%D7%95%D7%9C%D7%99",
+      desc: "המרכז מכשיר סטודנטים לעבודה עם אנשים החיים עם מוגבלות פיזית, חושית, שכלית או נפשית, ועם משפחותיהם. ההכשרה כוללת התערבות פרטנית, סנגור, מיצוי זכויות, וקידום שילוב בקהילה.",
+      places: [
+        { icon: "ti-accessible", name: "מרכזי שיקום פיזי ונוירולוגי" },
+        { icon: "ti-users", name: "עמותות (אקים, בזכות, יד שרה)" },
+        { icon: "ti-stethoscope", name: "שירותי שיקום בקופות חולים" },
+        { icon: "ti-home-2", name: "דיור מוגן לאנשים עם מוגבלות" },
+        { icon: "ti-briefcase", name: "מסגרות תעסוקה מוגנת" }
+      ],
+      coordinator: "פרטים יימסרו ע\"י המדור",
+      phone: "02-5882105",
+      email: "miribe@savion.huji.ac.il"
+    },
+    comm_jer: {
+      name: "מרכז למידה קהילתי — שכונות ירושלים",
+      icon: "comm_jer",
+      link: "https://sw.huji.ac.il/book/%D7%9E%D7%A7%D7%95%D7%9E%D7%95%D7%AA-%D7%94%D7%94%D7%9B%D7%A9%D7%A8%D7%94",
+      desc: "הסטודנטים מתנסים בעבודה קהילתית בשכונות ירושלים. ההכשרה כוללת בניית פרופיל קהילתי, איתור צרכים, אבחון מצב חברתי, ייזום ותכנון פרויקטים, ארגון תושבים, הנחיית קבוצות והפעלת תוכניות לשינוי חברתי.",
+      places: [
+        { icon: "ti-building-community", name: "מנהלים קהילתיים (יובלים, גינות העיר, בקעה)" },
+        { icon: "ti-heart", name: "לשכות רווחה שכונתיות" },
+        { icon: "ti-scale", name: "מרכזי עוצמה למיצוי זכויות" },
+        { icon: "ti-accessible", name: "תחנות שיקום שכונתיות" },
+        { icon: "ti-map-pin", name: "קרית יובל, מלחה, עין כרם, רמת שרת, צור באהר, בקעה" }
+      ],
+      note: "ההכשרה מתקיימת יומיים בשבוע, בעיקר בימים א' ו-ד'.",
+      coordinator: "רכז/ת המרכז הקהילתי",
+      phone: "02-5882105",
+      email: "miribe@savion.huji.ac.il"
+    },
+    comm_policy: {
+      name: "מרכז למידה קהילתי — מדיניות ושינוי חברתי",
+      icon: "comm_policy",
+      link: "https://sw.huji.ac.il/book/%D7%94%D7%9B%D7%A9%D7%A8%D7%94-%D7%9E%D7%A7%D7%A6%D7%95%D7%A2%D7%99%D7%AA-0",
+      desc: "המרכז מתמקד בעבודה ברמת מדיניות ושינוי חברתי. הסטודנטים משתלבים בארגונים העוסקים בפרקטיקת מדיניות, סנגור קבוצתי, וקבוצות פעילים לקידום שינוי מדיניות בתחומים חברתיים מגוונים.",
+      places: [
+        { icon: "ti-users", name: "איגוד העובדים הסוציאליים" },
+        { icon: "ti-scale", name: "ארגוני זכויות אדם וצדק חברתי" },
+        { icon: "ti-flag", name: "תנועות חברתיות" },
+        { icon: "ti-clipboard-list", name: "מרכזים למיצוי זכויות" },
+        { icon: "ti-bulb", name: "קבוצות פעילים: דיור ציבורי, חוק סיעוד" }
+      ],
+      coordinator: "רכז/ת המרכז הקהילתי",
+      phone: "02-5882105",
+      email: "miribe@savion.huji.ac.il"
+    },
+    comm_minorities: {
+      name: "מרכז למידה קהילתי — אוכלוסיות מודרות",
+      icon: "comm_minorities",
+      link: "https://sw.huji.ac.il/book/%D7%94%D7%9B%D7%A9%D7%A8%D7%94-%D7%9E%D7%A7%D7%A6%D7%95%D7%A2%D7%99%D7%AA-0",
+      desc: "המרכז עוסק בעבודה קהילתית עם אוכלוסיות מודרות ומיעוטים — חרדים, ערבים, עולים, פליטים. הסטודנטים מתנסים בעבודה רגישת-תרבות, בניית גשרים, וקידום זכויות בתוך הקהילה ומול ממסד.",
+      places: [
+        { icon: "ti-map-pin", name: "ארגוני קהילה ערביים במזרח ירושלים" },
+        { icon: "ti-building-community", name: "ארגוני קהילה חרדים" },
+        { icon: "ti-plane", name: "ארגונים לפליטים ומבקשי מקלט" },
+        { icon: "ti-home", name: "מרכזי קליטה לעולים" },
+        { icon: "ti-heart-handshake", name: "מרכזים בין-תרבותיים" }
+      ],
+      coordinator: "רכז/ת המרכז הקהילתי",
+      phone: "02-5882105",
+      email: "miribe@savion.huji.ac.il"
+    }
+  }
+};
+
+// ===================== Bot Logic =====================
+const messagesEl = document.getElementById('messages');
+const chatArea = document.getElementById('chat-area');
+const typingEl = document.getElementById('typing');
+
+function initAvatars() {
+  document.querySelectorAll('#typing .avatar-mini').forEach(el => {
+    if (!el.innerHTML.trim()) el.innerHTML = makeAvatar(44);
+  });
+}
+
+function scrollDown() {
+  setTimeout(() => { chatArea.scrollTop = chatArea.scrollHeight; }, 50);
+}
+
+function showTyping() {
+  initAvatars();
+  typingEl.style.display = 'flex';
+  scrollDown();
+}
+
+function hideTyping() {
+  typingEl.style.display = 'none';
+}
+
+function openLink(url) {
+  window.open(url, '_blank', 'noopener,noreferrer');
+}
+
+function botMessage(html, options, delay) {
+  delay = delay || 700;
+  showTyping();
+  setTimeout(() => {
+    hideTyping();
+    const msg = document.createElement('div');
+    msg.className = 'bot-msg';
+    let optsHtml = '';
+    if (options && options.length) {
+      optsHtml = '<div class="bot-options">' + options.map(o => {
+        if (o.url) {
+          return `<button class="bot-btn link-btn" onclick="openLink('${o.url}')">
+            <span>${o.label}</span>
+            <i class="ti ti-external-link arrow"></i>
+          </button>`;
+        }
+        return `<button class="bot-btn ${o.back ? 'back' : ''}" onclick="handleChoice('${o.value}')">
+          <span>${o.label}</span>
+          <i class="ti ti-${o.back ? 'arrow-right' : 'chevron-left'} arrow"></i>
+        </button>`;
+      }).join('') + '</div>';
+    }
+    msg.innerHTML = `
+      <div class="avatar-mini">${makeAvatar(44)}</div>
+      <div class="bot-bubble">${html}${optsHtml}</div>
+    `;
+    messagesEl.appendChild(msg);
+    scrollDown();
+  }, delay);
+}
+
+function userMessage(text) {
+  const msg = document.createElement('div');
+  msg.className = 'user-msg';
+  msg.innerHTML = `<div class="user-bubble">${text}</div>`;
+  messagesEl.appendChild(msg);
+  scrollDown();
+}
+
+function showMainMenu() {
+  botMessage(
+    `<h4>שלום וברוכים הבאים <span class="welcome-emoji">👋</span></h4>
+     <p>אני <strong>מאיה</strong>, ואני כאן כדי לתת לכם מידע על המדור להכשרה מקצועית בבית הספר לעבודה סוציאלית באוניברסיטה העברית.</p>
+     <p style="font-size: 14px; color: #8a7a85;">במה תרצו להתעניין?</p>`,
+    [
+      { label: "מידע כללי על המדור", value: "general" },
+      { label: "המגמה הפרטנית", value: "partani" },
+      { label: "המגמה הקהילתית", value: "kehilatit" },
+      { label: "יצירת קשר עם המדור", value: "contact" }
+    ],
+    400
+  );
+}
+
+function showCenters(track) {
+  const t = data[track];
+  botMessage(
+    t.description,
+    [
+      ...t.centers.map(c => ({ label: c.name, value: `center:${track}:${c.id}` })),
+      { label: "חזרה לתפריט הראשי", value: "main", back: true }
+    ]
+  );
+}
+
+function showCenterInfo(track, centerId) {
+  const info = data.centersInfo[centerId];
+  if (!info) return;
+
+  let placesHtml = '';
+  if (info.places && info.places.length) {
+    placesHtml = `
+      <div class="section-label"><i class="ti ti-building"></i> מקומות הכשרה לדוגמה</div>
+      <div class="places-grid">
+        ${info.places.map(p => `
+          <div class="place-chip">
+            <div class="chip-icon"><i class="ti ${p.icon}"></i></div>
+            <span>${p.name}</span>
+          </div>
+        `).join('')}
+      </div>`;
+  }
+
+  let noteHtml = '';
+  if (info.note) {
+    noteHtml = `<div class="note-box"><i class="ti ti-info-circle"></i><span>${info.note}</span></div>`;
+  }
+
+  const subtitle = info.subtitle ? `<p style="font-size: 13px; color: #8a7a85; margin: -8px 0 12px 0; font-weight: 500;">${info.subtitle}</p>` : '';
+  const hero = heroSVG[info.icon] || '';
+
+  botMessage(
+    `<div class="center-hero">${hero}</div>
+     <h4>${info.name}</h4>
+     ${subtitle}
+     <p>${info.desc}</p>
+     ${placesHtml}
+     ${noteHtml}
+     <div class="section-label"><i class="ti ti-user-circle"></i> רכז/ת המרכז</div>
+     <div class="contact-card">
+       <div class="name">${info.coordinator}</div>
+       <div class="contact-row"><i class="ti ti-phone"></i> ${info.phone}</div>
+       <div class="contact-row"><i class="ti ti-mail"></i> ${info.email}</div>
+     </div>`,
+    [
+      { label: "למידע נוסף באתר ביה\"ס", url: info.link },
+      { label: "חזרה לרשימת המרכזים", value: `back:${track}`, back: true },
+      { label: "חזרה לתפריט הראשי", value: "main", back: true }
+    ]
+  );
+}
+
+function showContact() {
+  botMessage(
+    `<h4>יצירת קשר עם המדור</h4>
+    <p>נשמח לעמוד לרשותכם לכל שאלה. צוות המדור:</p>
+
+    <div class="staff-card">
+      <div class="staff-icon">
+        <i class="ti ti-user-star"></i>
+      </div>
+      <div class="info">
+        <h5>פרופ' איריס צדוק</h5>
+        <div class="role">ראשת המדור להכשרה מקצועית</div>
+        <div class="contact-row"><i class="ti ti-map-pin"></i> חדר 316</div>
+        <div class="contact-row"><i class="ti ti-calendar"></i> בתיאום מראש</div>
+        <div class="contact-row"><i class="ti ti-mail"></i> iris.zadok@mail.huji.ac.il</div>
+      </div>
+    </div>
+
+    <div class="staff-card">
+      <div class="staff-icon">
+        <i class="ti ti-headset"></i>
+      </div>
+      <div class="info">
+        <h5>גב' מירי בן הרוש</h5>
+        <div class="role">רכזת המדור להכשרה מקצועית</div>
+        <div class="contact-row"><i class="ti ti-map-pin"></i> חדר 316</div>
+        <div class="contact-row"><i class="ti ti-phone"></i> 02-5882105</div>
+        <div class="contact-row"><i class="ti ti-printer"></i> פקס: 02-5882107</div>
+        <div class="contact-row"><i class="ti ti-clock"></i> א'-ה' 8:00-13:30</div>
+        <div class="contact-row"><i class="ti ti-mail"></i> miribe@savion.huji.ac.il</div>
+      </div>
+    </div>
+
+    <div class="note-box">
+      <i class="ti ti-building"></i>
+      <span><strong>כתובת:</strong> ביה"ס לעבודה סוציאלית ע"ש פאול ברוואלד, האוניברסיטה העברית, הר הצופים, ירושלים.</span>
+    </div>`,
+    [
+      { label: "אתר המדור להכשרה מקצועית", url: "https://sw.huji.ac.il/book/%D7%94%D7%9B%D7%A9%D7%A8%D7%94-%D7%9E%D7%A7%D7%A6%D7%95%D7%A2%D7%99%D7%AA-0" },
+      { label: "חזרה לתפריט הראשי", value: "main", back: true }
+    ]
+  );
+}
+
+function handleChoice(value) {
+  if (value === 'general') {
+    userMessage("מידע כללי על המדור");
+    botMessage(data.general.content, [
+      { label: "למידע נוסף באתר ביה\"ס", url: data.general.link },
+      { label: "חזרה לתפריט הראשי", value: "main", back: true }
+    ]);
+  } else if (value === 'partani') {
+    userMessage("המגמה הפרטנית");
+    showCenters('partani');
+  } else if (value === 'kehilatit') {
+    userMessage("המגמה הקהילתית");
+    showCenters('kehilatit');
+  } else if (value === 'contact') {
+    userMessage("יצירת קשר עם המדור");
+    showContact();
+  } else if (value === 'main') {
+    showMainMenu();
+  } else if (value.startsWith('back:')) {
+    const track = value.split(':')[1];
+    showCenters(track);
+  } else if (value.startsWith('center:')) {
+    const [, track, centerId] = value.split(':');
+    const center = data[track].centers.find(c => c.id === centerId);
+    userMessage(center.name);
+    showCenterInfo(track, centerId);
+  }
+}
+
+// Start the bot
+setTimeout(showMainMenu, 200);
+</script>
+
+</body>
+</html>
