@@ -1205,7 +1205,7 @@ const heroSVG = {
 const data = {
   general: {
     link: "https://sw.huji.ac.il/book/%D7%94%D7%9B%D7%A9%D7%A8%D7%94-%D7%9E%D7%A7%D7%A6%D7%95%D7%A2%D7%99%D7%AA-0",
-    content: `<h4>מידע כללי על ההכשרה</h4>
+    content: `<h4>מידע על ההכשרה המקצועית</h4>
     <p>ההכשרה המקצועית היא מרכיב מרכזי ומשמעותי בלימודי התואר בעבודה סוציאלית, ומאפשרת לסטודנטים לחבר בין הידע התיאורטי הנרכש בכיתה לבין ההתנסות המעשית בשדה.</p>
     <p>הסטודנטים משתלבים בהכשרה המקצועית במסגרת תוכנית הבוגר בשנים ב' ו-ג', ובמסגרת תוכנית ההשלמות בשנים א' ו-ב'. בכל אחת משנות ההכשרה הם משובצים לארגון הכשרה שונה, המאפשר להם להיחשף למגוון תחומי עשייה ואוכלוסיות יעד.</p>
     <div class="section-label"><i class="ti ti-clock-hour-4"></i> היקף ההכשרה</div>
@@ -1575,7 +1575,7 @@ function showMainMenu() {
      <p>אני <strong>מאיה</strong>, ואני כאן כדי לתת לכם מידע על המדור להכשרה מקצועית בבית הספר לעבודה סוציאלית באוניברסיטה העברית.</p>
      <p style="font-size: 14px; color: #8a7a85;">במה תרצו להתעניין?</p>`,
     [
-      { label: "מידע כללי על המדור", value: "general" },
+      { label: "מידע על ההכשרה המקצועית", value: "general" },
       { label: "המגמה הפרטנית", value: "partani" },
       { label: "המגמה הקהילתית", value: "kehilatit" },
       { label: "יצירת קשר עם המדור", value: "contact" }
@@ -1720,7 +1720,7 @@ function showContact() {
 
 function handleChoice(value) {
   if (value === 'general') {
-    userMessage("מידע כללי על המדור");
+    userMessage("מידע על ההכשרה המקצועית");
     botMessage(data.general.content, [
       { label: "למידע נוסף באתר ביה\"ס", url: data.general.link },
       { label: "חזרה לתפריט הראשי", value: "main", back: true }
