@@ -486,6 +486,115 @@ html, body {
   animation: float 2s ease-in-out infinite;
 }
 
+/* Smart search box */
+.search-wrapper {
+  margin: 14px 0 8px 0;
+  background: linear-gradient(135deg, #fef7f0 0%, #fde5ec 100%);
+  border: 1.5px solid var(--c-pink-pale);
+  border-radius: 18px;
+  padding: 10px 12px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  transition: all 0.2s;
+}
+.search-wrapper:focus-within {
+  border-color: var(--c-coral);
+  box-shadow: 0 0 0 3px rgba(217, 122, 140, 0.15);
+}
+.search-input {
+  flex: 1;
+  border: none;
+  background: transparent;
+  font-family: inherit;
+  font-size: 14px;
+  color: var(--c-text);
+  padding: 6px 4px;
+  outline: none;
+  min-width: 0;
+}
+.search-input::placeholder {
+  color: var(--c-text-muted);
+  font-weight: 400;
+}
+.search-btn {
+  border: none;
+  background: white;
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
+  flex-shrink: 0;
+  box-shadow: 0 1px 3px rgba(139, 90, 140, 0.1);
+}
+.search-btn i {
+  color: var(--c-primary);
+  font-size: 18px;
+}
+.search-btn:hover {
+  background: var(--c-coral);
+  transform: scale(1.05);
+}
+.search-btn:hover i { color: white; }
+.search-btn.send {
+  background: linear-gradient(135deg, #d97a8c 0%, #e8b86a 100%);
+}
+.search-btn.send i { color: white; }
+.search-btn.send:hover {
+  background: linear-gradient(135deg, #c44060 0%, #d97a8c 100%);
+}
+.search-btn.recording {
+  background: #e84a6a;
+  animation: recordPulse 1s ease-in-out infinite;
+}
+.search-btn.recording i { color: white; }
+@keyframes recordPulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(232, 74, 106, 0.6); }
+  50% { box-shadow: 0 0 0 8px rgba(232, 74, 106, 0); }
+}
+
+.search-hint {
+  font-size: 11.5px;
+  color: var(--c-text-muted);
+  text-align: center;
+  margin: 4px 0 0 0;
+  font-weight: 400;
+}
+.search-divider {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 14px 0 6px 0;
+  color: var(--c-text-muted);
+  font-size: 11.5px;
+  font-weight: 500;
+}
+.search-divider::before,
+.search-divider::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: var(--c-pink-pale);
+}
+
+.search-result-hint {
+  background: linear-gradient(135deg, #fff8e8 0%, #fde9d9 100%);
+  border: 1.5px dashed #f5d4a3;
+  border-radius: 12px;
+  padding: 10px 12px;
+  margin: 0 0 12px 0;
+  font-size: 13px;
+  color: #6b4a0a;
+  display: flex;
+  gap: 8px;
+  align-items: flex-start;
+}
+.search-result-hint i { color: #c9a040; font-size: 16px; flex-shrink: 0; margin-top: 1px; }
+
 /* Footer */
 .footer {
   padding: 12px 20px;
@@ -1488,6 +1597,299 @@ const data = {
   }
 };
 
+// ===================== Smart Search Engine =====================
+// Keyword dictionary - maps Hebrew terms to centers/topics
+const knowledgeMap = [
+  // ===== מידע כללי =====
+  { topic: "general", type: "info", label: "מידע על ההכשרה המקצועית",
+    keywords: ["מה זה ההכשרה", "איך עובדת ההכשרה", "פרטים על ההכשרה", "סקירה כללית", "מבוא", "היקף ההכשרה", "כמה שעות", "כמה ימים", "נקודות זכות", "נז", "סדנה", "מבנה ההכשרה", "תוכנית הבוגר", "השלמות", "מרכיבי ההכשרה", "הדרכה אישית", "מדריך", "מדריכה"] },
+
+  // ===== יצירת קשר =====
+  { topic: "contact", type: "info", label: "יצירת קשר עם המדור",
+    keywords: ["יצירת קשר", "ליצור קשר", "טלפון", "מייל", "אימייל", "כתובת", "מי הצוות", "ראש המדור", "רכזת", "איריס", "מירי", "פקס", "שעות קבלה", "איפה המשרד", "חדר", "הר הצופים", "לדבר עם מישהו"] },
+
+  // ===== בריאות הנפש =====
+  { topic: "mental_health", type: "center", track: "partani", label: "מרכז למידה לבריאות הנפש",
+    keywords: ["בריאות הנפש", "בריאות נפש", "פסיכי", "פסיכיאטרי", "פסיכיאטריה", "דיכאון", "חרדה", "סכיזופרניה", "הפרעה דו-קוטבית", "מאניה", "מתמודדים", "שיקום נפשי", "מרפאה לבריאות הנפש", "איתנים", "כפר שאול", "פסיכוסוציאלי", "מצוקה נפשית", "מחלת נפש", "התמודדות נפשית"] },
+
+  // ===== משפחות בסיכון =====
+  { topic: "families", type: "center", track: "partani", label: "מרכז למידה למשפחות בסיכון",
+    keywords: ["משפחה", "משפחות", "הורות", "הורים", "הורה", "גירושין", "פרידה", "אלימות במשפחה", "אלימות", "זוגיות", "ילדים בסיכון", "סיכון", "רווחה משפחתית", "לשכת רווחה", "מחלקה לשירותים חברתיים", "אומנה", "חוץ-ביתי", "פנימייה"] },
+
+  // ===== גיל הזקנה =====
+  { topic: "elderly", type: "center", track: "partani", label: "מרכז למידה לאתגרי הטיפול בגיל הזקנה",
+    keywords: ["זקנה", "זקנים", "קשישים", "קשיש", "גיל זהב", "הזדקנות", "סיעוד", "אזרחים ותיקים", "ניצולי שואה", "פרישה", "בית אבות", "דיור מוגן", "גריאטריה", "מבוגרים", "אזרח ותיק"] },
+
+  // ===== מתבגרים =====
+  { topic: "teens", type: "center", track: "partani", label: "מרכז למידה לטיפול במתבגרים",
+    keywords: ["מתבגרים", "מתבגר", "נוער", "נער", "נערה", "נערים", "נערות", "טינייג'ר", "טינייג'רים", "גיל ההתבגרות", "בני נוער", "תיכון", "תיכוניסט", "פנימיית נוער", "נושר", "מחוננים"] },
+
+  // ===== חרוב =====
+  { topic: "haruv", type: "center", track: "partani", label: "קמפוס חרוב — ילדים נפגעי התעללות",
+    keywords: ["חרוב", "התעללות", "התעללות בילדים", "ילדים נפגעי", "ילדים בסיכון", "פגיעה בילדים", "הזנחה", "מוגנות", "תקיפה מינית", "חקירת ילדים", "המועצה לשלום הילד", "ילדים נפגעים", "פגיעה מינית", "ילדים מוכים"] },
+
+  // ===== טראומה =====
+  { topic: "trauma", type: "center", track: "partani", label: "מרכז למידה לטראומה, חוסן והתמודדות",
+    keywords: ["טראומה", "טראומטי", "פוסט-טראומה", "פוסט טראומה", "ptsd", "פטסד", "חוסן", "משבר", "חירום", "מלחמה", "מלחמתי", "ביטחוני", "טרור", "נפגעי טרור", "נטל", "פסיכוטראומה", "טרואמטיזציה משנית"] },
+
+  // ===== תעסוקה =====
+  { topic: "employment", type: "center", track: "partani", label: "מרכז למידה: תחום התעסוקה",
+    keywords: ["תעסוקה", "עבודה", "עוס תעסוקה", "מקצוע", "פרנסה", "מובטלים", "שיקום תעסוקתי", "השמה", "חיפוש עבודה", "חסמי תעסוקה", "השתלבות בעבודה", "מעוטות הזדמנויות"] },
+
+  // ===== שיקום =====
+  { topic: "rehab", type: "center", track: "partani", label: "מרכז למידה: שיקום ובריאות בקהילה",
+    keywords: ["שיקום", "מוגבלות", "נכות", "נכים", "אנשים עם מוגבלות", "לקות ראייה", "עיוורון", "חינוך מיוחד", "צרכים מיוחדים", "מכבי", "קופת חולים", "שב\"ס", "שבס", "בית כלא", "בית סוהר", "אסירים", "אקים", "בזכות", "יד שרה"] },
+
+  // ===== הדסה =====
+  { topic: "hadassah", type: "center", track: "partani", label: "בית החולים האוניברסיטאי הדסה",
+    keywords: ["הדסה", "בית חולים הדסה", "הדסה עין כרם", "הדסה הר הצופים", "אונקולוגיה", "אונקולוגי", "המטולוגיה", "כירורגיה", "אורטופדיה", "נוירולוגיה", "אשפוז", "מחלקת ילדים", "טיפול נמרץ", "הוספיס", "מחלה כרונית", "טיפול תומך"] },
+
+  // ===== שערי צדק =====
+  { topic: "shaarey", type: "center", track: "partani", label: "בית החולים שערי צדק",
+    keywords: ["שערי צדק", "שערי-צדק", "ש\"צ", "בית חולים שערי צדק", "שערי צדק ירושלים", "מחלקת נשים", "דיאליזה", "מחלקת אם"] },
+
+  // ===== מעלה אדומים =====
+  { topic: "maaleh_adumim", type: "center", track: "partani", label: "אגף הרווחה מעלה אדומים",
+    keywords: ["מעלה אדומים", "מעלה-אדומים", "אגף רווחה עירוני", "רווחה עירונית", "מערך עירוני"] },
+
+  // ===== מרכז הארץ =====
+  { topic: "merkaz_haaretz", type: "center", track: "partani", label: "רב-תחומי במרכז הארץ",
+    keywords: ["מרכז הארץ", "גוש דן", "תל אביב", "ראשון לציון", "רחובות", "אזור המרכז", "רחוק מירושלים", "מחוץ לירושלים", "השרון", "פתח תקווה", "טיפול דיאדי", "אם-ילד", "גיל הרך", "משפחות אומנה"] },
+
+  // ===== תקו"ן =====
+  { topic: "tikun", type: "center", track: "partani", label: "רב-תחומי תקו\"ן והתמכרויות",
+    keywords: ["תקון", "תקו\"ן", "התמכרויות", "התמכרות", "מכורים", "מכור", "סמים", "אלכוהול", "אסירים", "אסיר משוחרר", "פליטים", "מבקשי מקלט", "דרי רחוב", "חסרי בית", "נשים חסרות בית", "שלמ", "ש\"לם", "reaching out", "פראו כץ"] },
+
+  // ===== מזרח ירושלים =====
+  { topic: "east_jer", type: "center", track: "partani", label: "רב-תרבותי במזרח ירושלים",
+    keywords: ["מזרח ירושלים", "מזרח-ירושלים", "ערבית", "ערבי", "ערבים", "דובר ערבית", "דוברי ערבית", "רב-תרבותי", "רב תרבותי", "רב-תרבותית", "מולטי קולטורלי", "תרבותי"] },
+
+  // ===== קהילתי =====
+  { topic: "community", type: "center", track: "kehilatit", label: "מרכז הלמידה הקהילתי",
+    keywords: ["קהילתי", "קהילה", "קהילתית", "שכונה", "שכונתי", "מדיניות", "שינוי חברתי", "אקטיביזם", "פעילים", "ארגון קהילתי", "מיפוי צרכים", "פיתוח קהילה", "סנגור", "סנגור קבוצתי", "כוח לעובדים", "איגוד עו\"ס", "ג'וינט", "ג'ק", "מצילות המזון", "דרי רחוב", "מינהל קהילתי", "קריית יובל", "בית הכרם", "גבעה הצרפתית", "ואדי ג'וז"] },
+
+  // ===== מסלולים כלליים =====
+  { topic: "partani", type: "track", label: "המגמה הפרטנית",
+    keywords: ["פרטני", "פרטנית", "מגמה פרטנית", "טיפול פרטני", "טיפול אישי", "טיפול פסיכותרפויטי", "פסיכותרפיה", "ייעוץ פרטני"] },
+  { topic: "kehilatit", type: "track", label: "המגמה הקהילתית",
+    keywords: ["קהילתית", "מגמה קהילתית", "מגמה קהילה"] }
+];
+
+// Normalize Hebrew text: remove niqqud, lowercase, normalize quotes
+function normalize(text) {
+  return text
+    .toLowerCase()
+    .replace(/[\u0591-\u05C7]/g, '') // remove niqqud
+    .replace(/["'״׳]/g, '"')
+    .replace(/[־–—]/g, '-')
+    .replace(/\s+/g, ' ')
+    .trim();
+}
+
+// Score how well a query matches a topic
+function scoreMatch(query, keywords) {
+  const nQuery = normalize(query);
+  let score = 0;
+  let matches = [];
+  for (const kw of keywords) {
+    const nKw = normalize(kw);
+    if (nKw.length < 2) continue;
+    // Check whole phrase
+    if (nQuery.includes(nKw)) {
+      // Bonus for longer keywords (more specific match)
+      const weight = Math.max(1, nKw.split(' ').length * 2) + (nKw.length / 5);
+      score += weight;
+      matches.push(kw);
+    }
+  }
+  return { score, matches };
+}
+
+// Find best matching topics
+function searchKnowledge(query) {
+  if (!query || !query.trim()) return [];
+  const results = knowledgeMap.map(item => {
+    const { score, matches } = scoreMatch(query, item.keywords);
+    return { ...item, score, matches };
+  }).filter(r => r.score > 0)
+    .sort((a, b) => b.score - a.score);
+  return results;
+}
+
+// Handle a free-text search query
+function handleSearch(query) {
+  if (!query || !query.trim()) return;
+  userMessage(query);
+
+  const results = searchKnowledge(query);
+
+  // No matches at all
+  if (results.length === 0) {
+    botMessage(
+      `<h4>לא הצלחתי לזהות במה מדובר 🤔</h4>
+       <p>אני מתנצלת — לא הבנתי בדיוק על מה השאלה. נסו לנסח אחרת, או בחרו מהתפריט:</p>`,
+      [
+        { label: "מידע על ההכשרה המקצועית", value: "general" },
+        { label: "המגמה הפרטנית", value: "partani" },
+        { label: "המגמה הקהילתית", value: "kehilatit" },
+        { label: "יצירת קשר עם המדור", value: "contact" }
+      ]
+    );
+    return;
+  }
+
+  // Single strong match
+  const topResult = results[0];
+  const others = results.slice(1, 4); // up to 3 alternatives
+
+  // If top score is dominant (much higher), go directly
+  if (results.length === 1 || topResult.score > (results[1]?.score || 0) * 1.8) {
+    botMessage(
+      `<div class="search-result-hint">
+         <i class="ti ti-sparkles"></i>
+         <span>הבנתי שאתם מחפשים מידע על <strong>${topResult.label}</strong>. הנה המידע:</span>
+       </div>`,
+      null,
+      400
+    );
+    setTimeout(() => routeToTopic(topResult), 1400);
+    return;
+  }
+
+  // Multiple matches - let user pick
+  const options = [topResult, ...others].map(r => ({
+    label: r.label,
+    value: `search:${r.topic}:${r.type}:${r.track || ''}`
+  }));
+  options.push({ label: "אף אחד מהאפשרויות האלה", value: "main", back: true });
+
+  botMessage(
+    `<h4>מצאתי כמה אפשרויות רלוונטיות ✨</h4>
+     <p>לאיזה מהנושאים האלה התכוונתם?</p>`,
+    options
+  );
+}
+
+function routeToTopic(result) {
+  if (result.type === "info") {
+    if (result.topic === "general") {
+      botMessage(data.general.content, [
+        { label: "למידע נוסף באתר ביה\"ס", url: data.general.link },
+        { label: "חזרה לתפריט הראשי", value: "main", back: true }
+      ]);
+    } else if (result.topic === "contact") {
+      showContact();
+    }
+  } else if (result.type === "track") {
+    showCenters(result.topic);
+  } else if (result.type === "center") {
+    showCenterInfo(result.track, result.topic);
+  }
+}
+
+// Speech recognition setup
+let recognition = null;
+let isRecording = false;
+
+function initSpeechRecognition() {
+  const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+  if (!SpeechRecognition) return null;
+  const rec = new SpeechRecognition();
+  rec.lang = 'he-IL';
+  rec.continuous = false;
+  rec.interimResults = false;
+  rec.maxAlternatives = 1;
+  return rec;
+}
+
+function toggleRecording(inputEl, micBtn) {
+  if (!recognition) {
+    recognition = initSpeechRecognition();
+    if (!recognition) {
+      alert('הקלטה קולית אינה נתמכת בדפדפן זה. נסו את Chrome או Edge.');
+      return;
+    }
+    recognition.onresult = (event) => {
+      const transcript = event.results[0][0].transcript;
+      inputEl.value = transcript;
+      stopRecording(micBtn);
+      // Auto-submit after speech
+      setTimeout(() => {
+        const q = inputEl.value.trim();
+        if (q) {
+          inputEl.value = '';
+          handleSearch(q);
+        }
+      }, 200);
+    };
+    recognition.onerror = (event) => {
+      console.warn('Speech error:', event.error);
+      stopRecording(micBtn);
+      if (event.error === 'not-allowed') {
+        alert('אנא אפשרו גישה למיקרופון כדי להשתמש בהקלטה.');
+      }
+    };
+    recognition.onend = () => stopRecording(micBtn);
+  }
+
+  if (isRecording) {
+    recognition.stop();
+    stopRecording(micBtn);
+  } else {
+    try {
+      recognition.start();
+      isRecording = true;
+      micBtn.classList.add('recording');
+      micBtn.querySelector('i').classList.remove('ti-microphone');
+      micBtn.querySelector('i').classList.add('ti-player-stop-filled');
+    } catch (e) {
+      console.warn('Could not start recognition:', e);
+    }
+  }
+}
+
+function stopRecording(micBtn) {
+  isRecording = false;
+  if (micBtn) {
+    micBtn.classList.remove('recording');
+    const icon = micBtn.querySelector('i');
+    if (icon) {
+      icon.classList.remove('ti-player-stop-filled');
+      icon.classList.add('ti-microphone');
+    }
+  }
+}
+
+// Wire up the search box after it's added to the DOM
+function wireSearchBox() {
+  const input = document.getElementById('search-input');
+  const sendBtn = document.getElementById('search-send');
+  const micBtn = document.getElementById('search-mic');
+  if (!input || !sendBtn || !micBtn) return;
+
+  const submit = () => {
+    const q = input.value.trim();
+    if (!q) return;
+    input.value = '';
+    handleSearch(q);
+  };
+
+  sendBtn.addEventListener('click', submit);
+  input.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      submit();
+    }
+  });
+  micBtn.addEventListener('click', () => toggleRecording(input, micBtn));
+
+  // Hide mic if not supported
+  const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+  if (!SR) {
+    micBtn.style.display = 'none';
+  }
+}
+
 // ===================== Bot Logic =====================
 const messagesEl = document.getElementById('messages');
 const chatArea = document.getElementById('chat-area');
@@ -1573,7 +1975,19 @@ function showMainMenu() {
   botMessage(
     `<h4>שלום וברוכים הבאים <span class="welcome-emoji">👋</span></h4>
      <p>אני <strong>מאיה</strong>, ואני כאן כדי לתת לכם מידע על המדור להכשרה מקצועית בבית הספר לעבודה סוציאלית באוניברסיטה העברית.</p>
-     <p style="font-size: 14px; color: #8a7a85;">במה תרצו להתעניין?</p>`,
+
+     <div class="search-wrapper">
+       <input type="text" class="search-input" id="search-input" placeholder="כתבו או הקליטו שאלה..." autocomplete="off" />
+       <button class="search-btn" id="search-mic" title="הקלטה קולית" aria-label="הקלטה קולית">
+         <i class="ti ti-microphone"></i>
+       </button>
+       <button class="search-btn send" id="search-send" title="שלח" aria-label="שלח שאלה">
+         <i class="ti ti-arrow-left"></i>
+       </button>
+     </div>
+     <p class="search-hint">💡 לדוגמה: "אני מעוניין בעבודה עם נוער" או "מה זה ההכשרה?"</p>
+
+     <div class="search-divider">או בחרו מהתפריט</div>`,
     [
       { label: "מידע על ההכשרה המקצועית", value: "general" },
       { label: "המגמה הפרטנית", value: "partani" },
@@ -1582,6 +1996,8 @@ function showMainMenu() {
     ],
     400
   );
+  // Wire up search box after it's rendered
+  setTimeout(wireSearchBox, 1000);
 }
 
 function showCenters(track) {
@@ -1736,6 +2152,14 @@ function handleChoice(value) {
     showContact();
   } else if (value === 'main') {
     showMainMenu();
+  } else if (value.startsWith('search:')) {
+    // Format: search:topic:type:track
+    const parts = value.split(':');
+    const topic = parts[1];
+    const type = parts[2];
+    const track = parts[3];
+    const result = { topic, type, track };
+    routeToTopic(result);
   } else if (value.startsWith('back:')) {
     const track = value.split(':')[1];
     showCenters(track);
