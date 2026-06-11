@@ -2031,11 +2031,20 @@ function stopRecording(micBtn) {
 }
 
 // Wire up the search box after it's added to the DOM
+// Always targets the LAST (newest) search box — fixes the bug where going back
+// creates a new box with the same class but wireSearchBox finds the old one.
 function wireSearchBox() {
-  const input = document.getElementById('search-input');
-  const sendBtn = document.getElementById('search-send');
-  const micBtn = document.getElementById('search-mic');
+  const inputs  = document.querySelectorAll('.js-search-input');
+  const sends   = document.querySelectorAll('.js-search-send');
+  const mics    = document.querySelectorAll('.js-search-mic');
+
+  const input   = inputs[inputs.length - 1];
+  const sendBtn = sends[sends.length - 1];
+  const micBtn  = mics[mics.length - 1];
+
   if (!input || !sendBtn || !micBtn) return;
+  if (input.dataset.wired) return; // already wired — skip
+  input.dataset.wired = '1';
 
   const submit = () => {
     const q = input.value.trim();
@@ -2053,11 +2062,12 @@ function wireSearchBox() {
   });
   micBtn.addEventListener('click', () => toggleRecording(input, micBtn));
 
+  // Focus the new input so user can type immediately
+  input.focus();
+
   // Hide mic if not supported
   const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
-  if (!SR) {
-    micBtn.style.display = 'none';
-  }
+  if (!SR) micBtn.style.display = 'none';
 }
 
 // ===================== Bot Logic =====================
@@ -2147,11 +2157,11 @@ function showMainMenu() {
      <p>אני <strong>מאיה</strong>, ואני כאן כדי לתת לכם מידע על המדור להכשרה מקצועית בבית הספר לעבודה סוציאלית באוניברסיטה העברית.</p>
 
      <div class="search-wrapper">
-       <input type="text" class="search-input" id="search-input" placeholder="כתבו או הקליטו שאלה..." autocomplete="off" />
-       <button class="search-btn" id="search-mic" title="הקלטה קולית" aria-label="הקלטה קולית">
+       <input type="text" class="search-input js-search-input" placeholder="כתבו או הקליטו שאלה..." autocomplete="off" />
+       <button class="search-btn js-search-mic" title="הקלטה קולית" aria-label="הקלטה קולית">
          <i class="ti ti-microphone"></i>
        </button>
-       <button class="search-btn send" id="search-send" title="שלח" aria-label="שלח שאלה">
+       <button class="search-btn send js-search-send" title="שלח" aria-label="שלח שאלה">
          <i class="ti ti-arrow-left"></i>
        </button>
      </div>
