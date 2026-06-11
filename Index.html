@@ -1,0 +1,2169 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#8b5a8c">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<title>בוט המדור להכשרה מקצועית | ביה"ס לעבודה סוציאלית - האוניברסיטה העברית</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Heebo:wght@400;500;700;800&family=Rubik:wght@400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@2.47.0/tabler-icons.min.css">
+
+<style>
+:root {
+  --c-primary: #8b5a8c;
+  --c-primary-light: #a86fa1;
+  --c-coral: #d97a8c;
+  --c-gold: #e8b86a;
+  --c-bg-soft: #fdf6f0;
+  --c-bg-pink: #fef0f5;
+  --c-pink-light: #fde5ec;
+  --c-pink-pale: #fadbe1;
+  --c-cream: #fef7f0;
+  --c-text: #3d2b3e;
+  --c-text-soft: #8a7a85;
+  --c-text-muted: #a8909b;
+}
+
+* { box-sizing: border-box; }
+
+html, body {
+  margin: 0;
+  padding: 0;
+  font-family: 'Heebo', 'Rubik', system-ui, sans-serif;
+  background: linear-gradient(135deg, #fef0f5 0%, #fdf6f0 50%, #fef7e8 100%);
+  min-height: 100vh;
+  color: var(--c-text);
+  overflow-x: hidden;
+  -webkit-text-size-adjust: 100%;
+}
+
+.page-wrapper {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+
+#bot-wrapper {
+  width: 100%;
+  max-width: 720px;
+  background: linear-gradient(180deg, #fdf6f0 0%, #fef0f5 100%);
+  border-radius: 24px;
+  overflow: hidden;
+  position: relative;
+  box-shadow: 0 10px 40px rgba(139, 90, 140, 0.15);
+}
+
+/* Header */
+.header {
+  background: linear-gradient(135deg, #8b5a8c 0%, #d97a8c 60%, #e8b86a 100%);
+  padding: 1.25rem 1.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  position: relative;
+  overflow: hidden;
+}
+.header .deco1 {
+  position: absolute; top: -20px; right: 30%;
+  width: 80px; height: 80px;
+  background: rgba(255,255,255,0.15);
+  border-radius: 50%;
+}
+.header .deco2 {
+  position: absolute; bottom: -30px; left: 20%;
+  width: 100px; height: 100px;
+  background: rgba(255,255,255,0.1);
+  border-radius: 50%;
+}
+.header .logo-wrap {
+  display: flex; align-items: center; gap: 12px;
+  min-width: 0; position: relative; z-index: 1;
+}
+.header .logo-box {
+  width: 48px; height: 48px;
+  border-radius: 14px;
+  background: white;
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+.header .titles p {
+  margin: 0;
+  color: white;
+  font-size: 15px;
+  font-weight: 700;
+  line-height: 1.3;
+}
+.header .titles p.sub {
+  color: rgba(255,255,255,0.9);
+  font-size: 11px;
+  font-weight: 400;
+}
+.header .titles.left { text-align: left; }
+.header .titles.left p { font-size: 12px; }
+
+/* Chat area */
+#chat-area {
+  padding: 1.5rem 1.25rem;
+  min-height: 500px;
+  height: 600px;
+  overflow-y: auto;
+}
+#chat-area::-webkit-scrollbar { width: 6px; }
+#chat-area::-webkit-scrollbar-track { background: transparent; }
+#chat-area::-webkit-scrollbar-thumb {
+  background: rgba(217, 122, 140, 0.3);
+  border-radius: 3px;
+}
+
+/* Animations */
+@keyframes dotBounce {
+  0%, 60%, 100% { transform: translateY(0); opacity: 0.4; }
+  30% { transform: translateY(-7px); opacity: 1; }
+}
+@keyframes slideUp {
+  from { opacity: 0; transform: translateY(12px) scale(0.98); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-3px); }
+}
+
+/* Typing */
+#typing {
+  display: none;
+  gap: 10px;
+  margin-bottom: 16px;
+  align-items: flex-end;
+}
+#typing .bubble {
+  background: white;
+  padding: 14px 18px;
+  border-radius: 22px 22px 22px 6px;
+  display: flex; gap: 5px;
+  box-shadow: 0 2px 10px rgba(139, 90, 140, 0.08);
+}
+.dot {
+  width: 8px; height: 8px;
+  border-radius: 50%;
+  background: var(--c-coral);
+  animation: dotBounce 1.2s infinite ease-in-out;
+}
+.dot:nth-child(2) { animation-delay: 0.15s; }
+.dot:nth-child(3) { animation-delay: 0.3s; }
+
+/* Messages */
+.bot-msg {
+  display: flex; gap: 12px;
+  margin-bottom: 16px;
+  align-items: flex-end;
+  animation: slideUp 0.4s ease-out;
+}
+.avatar-mini {
+  width: 44px; height: 44px;
+  flex-shrink: 0;
+  animation: float 4s ease-in-out infinite;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #fde5ec 0%, #f5d8c6 100%);
+  display: flex; align-items: flex-end; justify-content: center;
+  overflow: hidden;
+  box-shadow: 0 3px 10px rgba(139, 90, 140, 0.15);
+  border: 2.5px solid white;
+}
+
+.bot-bubble {
+  background: white;
+  border-radius: 22px 22px 22px 6px;
+  padding: 16px 18px;
+  font-size: 15px;
+  line-height: 1.7;
+  color: var(--c-text);
+  max-width: 92%;
+  flex: 1;
+  box-shadow: 0 2px 12px rgba(139, 90, 140, 0.08);
+}
+.bot-bubble h4 {
+  margin: 0 0 12px 0;
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--c-primary);
+  line-height: 1.3;
+  letter-spacing: -0.3px;
+}
+.bot-bubble p { margin: 0 0 10px 0; }
+.bot-bubble p:last-child { margin-bottom: 0; }
+.bot-bubble ul { margin: 8px 0; padding-inline-start: 22px; }
+.bot-bubble li { margin-bottom: 6px; }
+.bot-bubble ul li::marker { color: var(--c-coral); }
+
+.user-msg {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 16px;
+  animation: slideUp 0.4s ease-out;
+}
+.user-bubble {
+  background: linear-gradient(135deg, #8b5a8c 0%, #a86fa1 100%);
+  color: white;
+  font-weight: 500;
+  padding: 12px 18px;
+  border-radius: 22px 22px 6px 22px;
+  font-size: 14px;
+  max-width: 80%;
+  box-shadow: 0 2px 10px rgba(139, 90, 140, 0.2);
+}
+
+/* Buttons */
+.bot-options {
+  display: flex;
+  flex-direction: column;
+  gap: 9px;
+  margin-top: 14px;
+}
+.bot-btn {
+  background: white;
+  border: 2px solid var(--c-pink-pale);
+  color: var(--c-primary);
+  padding: 12px 16px;
+  border-radius: 16px;
+  font-size: 14px;
+  font-weight: 500;
+  font-family: inherit;
+  cursor: pointer;
+  text-align: right;
+  transition: all 0.2s;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  box-shadow: 0 1px 4px rgba(139, 90, 140, 0.05);
+}
+.bot-btn:hover {
+  background: linear-gradient(135deg, #d97a8c 0%, #e8b86a 100%);
+  border-color: transparent;
+  color: white;
+  transform: translateX(-3px);
+  box-shadow: 0 4px 14px rgba(217, 122, 140, 0.3);
+}
+.bot-btn .arrow { font-size: 18px; }
+.bot-btn.back {
+  border-color: #e8dde0;
+  color: var(--c-text-soft);
+  font-size: 13px;
+  padding: 10px 14px;
+  background: rgba(255,255,255,0.6);
+}
+.bot-btn.back:hover {
+  background: #f0e6ea;
+  color: #6b5a6c;
+  transform: none;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.05);
+}
+.bot-btn.link-btn {
+  background: linear-gradient(135deg, #e8b86a 0%, #d97a8c 100%);
+  color: white;
+  border: none;
+  font-weight: 700;
+}
+.bot-btn.link-btn:hover {
+  background: linear-gradient(135deg, #d97a8c 0%, #8b5a8c 100%);
+  color: white;
+}
+
+/* Hero illustration */
+.center-hero {
+  width: calc(100% + 36px);
+  margin: -16px -18px 16px -18px;
+  height: 160px;
+  border-radius: 22px 22px 0 0;
+  overflow: hidden;
+  position: relative;
+}
+
+/* Sections */
+.section-label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--c-coral);
+  margin: 18px 0 10px 0;
+  padding-bottom: 6px;
+  border-bottom: 2px dashed var(--c-pink-pale);
+}
+.section-label i { font-size: 16px; }
+
+.places-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 8px;
+  margin: 8px 0;
+}
+.place-chip {
+  background: linear-gradient(135deg, #fef7f0 0%, #fdf0ed 100%);
+  border: 1.5px solid var(--c-pink-pale);
+  padding: 11px 14px;
+  border-radius: 14px;
+  font-size: 13.5px;
+  font-weight: 500;
+  color: #4a3848;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  transition: transform 0.15s;
+}
+.place-chip:hover {
+  transform: translateX(-3px);
+  border-color: var(--c-coral);
+}
+.place-chip .chip-icon {
+  width: 32px;
+  height: 32px;
+  background: linear-gradient(135deg, #d97a8c 0%, #e8b86a 100%);
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+.place-chip .chip-icon i {
+  color: white;
+  font-size: 16px;
+}
+
+.contact-card {
+  background: linear-gradient(135deg, #fef7f0 0%, #fde5ec 100%);
+  border-radius: 16px;
+  padding: 14px 16px;
+  margin: 12px 0 8px 0;
+  border: 1.5px solid var(--c-pink-pale);
+}
+.contact-card .name {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--c-primary);
+  margin-bottom: 8px;
+}
+.contact-row {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  font-size: 13.5px;
+  color: #4a3848;
+  padding: 4px 0;
+  font-weight: 500;
+}
+.contact-row i {
+  color: var(--c-coral);
+  font-size: 16px;
+  width: 16px;
+}
+
+.note-box {
+  background: linear-gradient(135deg, #fff8e8 0%, #fde9d9 100%);
+  border: 1.5px solid #f5d4a3;
+  padding: 12px 14px;
+  border-radius: 14px;
+  margin: 12px 0;
+  font-size: 13.5px;
+  color: #6b4a0a;
+  font-weight: 500;
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+}
+.note-box i {
+  color: #c9a040;
+  font-size: 18px;
+  margin-top: 1px;
+  flex-shrink: 0;
+}
+
+/* Year stages (for community center) */
+.stage-card {
+  background: linear-gradient(135deg, #fef7f0 0%, #fde9d4 100%);
+  border: 1.5px solid #fadbe1;
+  border-radius: 14px;
+  padding: 13px 14px;
+  margin-bottom: 10px;
+  position: relative;
+}
+.stage-tag {
+  display: inline-block;
+  background: linear-gradient(135deg, #d97a8c 0%, #e8b86a 100%);
+  color: white;
+  font-size: 11px;
+  font-weight: 700;
+  padding: 3px 10px;
+  border-radius: 8px;
+  margin-bottom: 8px;
+  letter-spacing: 0.3px;
+}
+.stage-title {
+  font-size: 14.5px;
+  font-weight: 700;
+  color: var(--c-primary);
+  margin-bottom: 6px;
+}
+.stage-text {
+  font-size: 13.5px;
+  margin: 0 0 8px 0;
+  color: #4a3848;
+  line-height: 1.55;
+}
+.stage-examples {
+  font-size: 12.5px;
+  margin: 0;
+  color: #6b4a0a;
+  background: rgba(255,255,255,0.5);
+  padding: 8px 10px;
+  border-radius: 9px;
+  display: flex;
+  gap: 6px;
+  align-items: flex-start;
+  border-inline-start: 2px solid #e8b86a;
+}
+.stage-examples i {
+  color: #c9a040;
+  font-size: 14px;
+  margin-top: 2px;
+  flex-shrink: 0;
+}
+
+.staff-card {
+  background: white;
+  border: 1.5px solid var(--c-pink-pale);
+  border-radius: 18px;
+  padding: 16px;
+  margin-bottom: 12px;
+  display: flex;
+  gap: 14px;
+  box-shadow: 0 2px 10px rgba(139, 90, 140, 0.05);
+}
+.staff-card .staff-icon {
+  width: 56px;
+  height: 56px;
+  border-radius: 16px;
+  flex-shrink: 0;
+  background: linear-gradient(135deg, #d97a8c 0%, #e8b86a 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 3px 10px rgba(217, 122, 140, 0.25);
+}
+.staff-card .staff-icon i {
+  color: white;
+  font-size: 28px;
+}
+.staff-card .info { flex: 1; min-width: 0; }
+.staff-card .info h5 {
+  margin: 0 0 3px 0;
+  color: var(--c-primary);
+  font-size: 16px;
+  font-weight: 700;
+}
+.staff-card .role {
+  font-size: 12px;
+  color: var(--c-text-muted);
+  margin-bottom: 10px;
+  font-weight: 500;
+}
+
+.welcome-emoji {
+  font-size: 22px;
+  display: inline-block;
+  animation: float 2s ease-in-out infinite;
+}
+
+/* Smart search box */
+.search-wrapper {
+  margin: 14px 0 8px 0;
+  background: linear-gradient(135deg, #fef7f0 0%, #fde5ec 100%);
+  border: 1.5px solid var(--c-pink-pale);
+  border-radius: 18px;
+  padding: 10px 12px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  transition: all 0.2s;
+}
+.search-wrapper:focus-within {
+  border-color: var(--c-coral);
+  box-shadow: 0 0 0 3px rgba(217, 122, 140, 0.15);
+}
+.search-input {
+  flex: 1;
+  border: none;
+  background: transparent;
+  font-family: inherit;
+  font-size: 14px;
+  color: var(--c-text);
+  padding: 6px 4px;
+  outline: none;
+  min-width: 0;
+}
+.search-input::placeholder {
+  color: var(--c-text-muted);
+  font-weight: 400;
+}
+.search-btn {
+  border: none;
+  background: white;
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
+  flex-shrink: 0;
+  box-shadow: 0 1px 3px rgba(139, 90, 140, 0.1);
+}
+.search-btn i {
+  color: var(--c-primary);
+  font-size: 18px;
+}
+.search-btn:hover {
+  background: var(--c-coral);
+  transform: scale(1.05);
+}
+.search-btn:hover i { color: white; }
+.search-btn.send {
+  background: linear-gradient(135deg, #d97a8c 0%, #e8b86a 100%);
+}
+.search-btn.send i { color: white; }
+.search-btn.send:hover {
+  background: linear-gradient(135deg, #c44060 0%, #d97a8c 100%);
+}
+.search-btn.recording {
+  background: #e84a6a;
+  animation: recordPulse 1s ease-in-out infinite;
+}
+.search-btn.recording i { color: white; }
+@keyframes recordPulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(232, 74, 106, 0.6); }
+  50% { box-shadow: 0 0 0 8px rgba(232, 74, 106, 0); }
+}
+
+.search-hint {
+  font-size: 11.5px;
+  color: var(--c-text-muted);
+  text-align: center;
+  margin: 4px 0 0 0;
+  font-weight: 400;
+}
+.search-divider {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 14px 0 6px 0;
+  color: var(--c-text-muted);
+  font-size: 11.5px;
+  font-weight: 500;
+}
+.search-divider::before,
+.search-divider::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: var(--c-pink-pale);
+}
+
+.search-result-hint {
+  background: linear-gradient(135deg, #fff8e8 0%, #fde9d9 100%);
+  border: 1.5px dashed #f5d4a3;
+  border-radius: 12px;
+  padding: 10px 12px;
+  margin: 0 0 12px 0;
+  font-size: 13px;
+  color: #6b4a0a;
+  display: flex;
+  gap: 8px;
+  align-items: flex-start;
+}
+.search-result-hint i { color: #c9a040; font-size: 16px; flex-shrink: 0; margin-top: 1px; }
+
+/* Footer */
+.footer {
+  padding: 12px 20px;
+  text-align: center;
+  font-size: 11px;
+  color: var(--c-text-muted);
+  background: rgba(255,255,255,0.5);
+  border-top: 1px solid var(--c-pink-pale);
+}
+.footer a {
+  color: var(--c-primary);
+  text-decoration: none;
+  font-weight: 500;
+}
+.footer a:hover { text-decoration: underline; }
+
+/* Mobile - tablets and smaller */
+@media (max-width: 768px) {
+  .page-wrapper { padding: 0; }
+  #bot-wrapper {
+    border-radius: 0;
+    min-height: 100vh;
+    max-width: 100%;
+    box-shadow: none;
+  }
+  #chat-area {
+    height: calc(100dvh - 145px);
+    min-height: calc(100dvh - 145px);
+    padding: 1rem 0.875rem;
+  }
+  .header { padding: 0.875rem 1rem; gap: 8px; }
+  .header .logo-box {
+    width: 40px;
+    height: 40px;
+    border-radius: 11px;
+  }
+  .header .logo-box svg { width: 26px; height: 26px; }
+  .header .titles p { font-size: 13px; line-height: 1.25; }
+  .header .titles p.sub { font-size: 10px; line-height: 1.25; }
+  .header .titles.left p { font-size: 11px; }
+
+  .bot-msg { gap: 8px; margin-bottom: 14px; }
+  .avatar-mini {
+    width: 36px;
+    height: 36px;
+    border-width: 2px;
+  }
+  .avatar-mini svg { width: 36px; height: 36px; }
+
+  .bot-bubble {
+    padding: 14px 14px;
+    font-size: 14.5px;
+    line-height: 1.65;
+    border-radius: 18px 18px 18px 4px;
+    max-width: calc(100% - 44px);
+  }
+  .bot-bubble h4 {
+    font-size: 18px;
+    margin-bottom: 10px;
+  }
+
+  .user-bubble {
+    padding: 10px 14px;
+    font-size: 14px;
+    border-radius: 18px 18px 4px 18px;
+    max-width: 85%;
+  }
+
+  .center-hero {
+    width: calc(100% + 28px);
+    margin: -14px -14px 14px -14px;
+    height: 130px;
+    border-radius: 18px 18px 0 0;
+  }
+
+  .section-label {
+    font-size: 13px;
+    margin: 14px 0 8px 0;
+  }
+
+  .place-chip {
+    padding: 10px 12px;
+    font-size: 13px;
+    gap: 9px;
+  }
+  .place-chip .chip-icon {
+    width: 30px;
+    height: 30px;
+    border-radius: 9px;
+  }
+  .place-chip .chip-icon i { font-size: 15px; }
+
+  .contact-card {
+    padding: 12px 14px;
+    border-radius: 14px;
+  }
+  .contact-card .name { font-size: 14.5px; }
+  .contact-row { font-size: 13px; }
+
+  .note-box {
+    padding: 10px 12px;
+    font-size: 12.5px;
+    border-radius: 12px;
+  }
+
+  .staff-card {
+    padding: 14px;
+    gap: 12px;
+    border-radius: 16px;
+  }
+  .staff-card .staff-icon {
+    width: 48px;
+    height: 48px;
+    border-radius: 13px;
+  }
+  .staff-card .staff-icon i { font-size: 24px; }
+  .staff-card .info h5 { font-size: 15px; }
+  .staff-card .role { font-size: 11.5px; }
+
+  .bot-btn {
+    padding: 11px 14px;
+    font-size: 13.5px;
+    border-radius: 14px;
+    border-width: 1.5px;
+  }
+  .bot-btn .arrow { font-size: 16px; }
+  .bot-btn.back {
+    padding: 9px 12px;
+    font-size: 12.5px;
+  }
+
+  .footer {
+    font-size: 10px;
+    padding: 10px 14px;
+  }
+}
+
+/* Extra small mobile - phones under 380px */
+@media (max-width: 380px) {
+  .header { padding: 0.75rem 0.875rem; }
+  .header .titles p { font-size: 12px; }
+  .header .titles p.sub { font-size: 9.5px; }
+  .header .titles.left { display: none; }
+  .bot-bubble { font-size: 14px; padding: 12px 13px; }
+  .bot-bubble h4 { font-size: 17px; }
+  .center-hero { height: 115px; }
+}
+</style>
+</head>
+<body>
+<div class="page-wrapper">
+<div id="bot-wrapper">
+
+<!-- Header -->
+<div class="header">
+  <div class="deco1"></div>
+  <div class="deco2"></div>
+
+  <div class="logo-wrap">
+    <div class="logo-box">
+      <svg width="32" height="32" viewBox="0 0 42 42">
+        <defs>
+          <linearGradient id="logo-g1" x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0" stop-color="#8b5a8c"/>
+            <stop offset="1" stop-color="#d97a8c"/>
+          </linearGradient>
+        </defs>
+        <path d="M21 6 C14 6 10 11 10 18 C10 24 14 28 21 28 C28 28 32 24 32 18 C32 11 28 6 21 6 Z" fill="url(#logo-g1)"/>
+        <circle cx="21" cy="17" r="3" fill="white"/>
+        <path d="M14 24 Q21 28 28 24" stroke="white" stroke-width="2" fill="none" stroke-linecap="round"/>
+        <path d="M15 30 L15 36 M27 30 L27 36 M21 28 L21 36" stroke="#e8b86a" stroke-width="2" stroke-linecap="round"/>
+      </svg>
+    </div>
+    <div class="titles">
+      <p>המדור להכשרה מקצועית</p>
+      <p class="sub">ביה"ס לעבודה סוציאלית ע"ש פאול ברוואלד</p>
+    </div>
+  </div>
+
+  <div class="logo-wrap">
+    <div class="titles left">
+      <p>האוניברסיטה</p>
+      <p>העברית</p>
+    </div>
+    <div class="logo-box">
+      <svg width="32" height="32" viewBox="0 0 42 42">
+        <defs>
+          <linearGradient id="logo-g2" x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0" stop-color="#8b5a8c"/>
+            <stop offset="1" stop-color="#d97a8c"/>
+          </linearGradient>
+        </defs>
+        <path d="M21 5 L34 12 L34 15 L8 15 L8 12 Z" fill="url(#logo-g2)"/>
+        <rect x="11" y="17" width="3" height="13" rx="1" fill="url(#logo-g2)"/>
+        <rect x="19.5" y="17" width="3" height="13" rx="1" fill="url(#logo-g2)"/>
+        <rect x="28" y="17" width="3" height="13" rx="1" fill="url(#logo-g2)"/>
+        <rect x="7" y="32" width="28" height="3" rx="1" fill="url(#logo-g2)"/>
+        <path d="M21 3 L23 7 L21 9 L19 7 Z" fill="#e8b86a"/>
+      </svg>
+    </div>
+  </div>
+</div>
+
+<!-- Chat area -->
+<div id="chat-area">
+  <div id="messages"></div>
+  <div id="typing">
+    <div class="avatar-mini"></div>
+    <div class="bubble">
+      <span class="dot"></span><span class="dot"></span><span class="dot"></span>
+    </div>
+  </div>
+</div>
+
+<div class="footer">
+  בוט מידע © המדור להכשרה מקצועית · בית הספר לעבודה סוציאלית ולרווחה חברתית · האוניברסיטה העברית בירושלים
+</div>
+
+</div>
+</div>
+
+<script>
+// ===================== Avatars =====================
+// Maya - young modern student-style avatar
+function makeAvatar(size) {
+  size = size || 44;
+  const uid = 'av' + size + Math.random().toString(36).slice(2, 7);
+  return `<svg width="${size}" height="${size}" viewBox="0 0 100 100">
+    <defs>
+      <linearGradient id="bg-${uid}" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0" stop-color="#fef0d9"/>
+        <stop offset="1" stop-color="#fde5ec"/>
+      </linearGradient>
+      <linearGradient id="hair-${uid}" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0" stop-color="#6b3a1f"/>
+        <stop offset="1" stop-color="#4a2614"/>
+      </linearGradient>
+      <linearGradient id="shirt-${uid}" x1="0" y1="0" x2="1" y2="1">
+        <stop offset="0" stop-color="#d97a8c"/>
+        <stop offset="1" stop-color="#e8b86a"/>
+      </linearGradient>
+      <radialGradient id="cheek-${uid}" cx="0.5" cy="0.5">
+        <stop offset="0" stop-color="#ff8fa3" stop-opacity="0.7"/>
+        <stop offset="1" stop-color="#ff8fa3" stop-opacity="0"/>
+      </radialGradient>
+    </defs>
+    <!-- background circle -->
+    <circle cx="50" cy="50" r="50" fill="url(#bg-${uid})"/>
+    <!-- shoulders/T-shirt -->
+    <path d="M12 100 Q12 70 50 70 Q88 70 88 100 Z" fill="url(#shirt-${uid})"/>
+    <!-- T-shirt neckline -->
+    <path d="M42 70 Q50 76 58 70 L58 74 Q50 80 42 74 Z" fill="#c45a70"/>
+    <!-- neck -->
+    <path d="M44 63 Q44 70 50 70 Q56 70 56 63 Z" fill="#e8a880"/>
+    <!-- face - rounder/younger -->
+    <ellipse cx="50" cy="46" rx="22" ry="23" fill="#f5c89a"/>
+    <!-- side ponytail (right side) -->
+    <ellipse cx="76" cy="44" rx="9" ry="14" fill="url(#hair-${uid})" transform="rotate(15 76 44)"/>
+    <!-- hair bun base (top) -->
+    <ellipse cx="58" cy="22" rx="12" ry="8" fill="url(#hair-${uid})"/>
+    <!-- hair main mass - youthful bangs and side -->
+    <path d="M28 44 Q26 22 42 16 Q50 13 58 14 Q70 16 72 32 Q72 38 70 42 Q67 32 60 30 Q54 28 48 30 Q40 32 34 38 Q30 42 28 48 Z" fill="url(#hair-${uid})"/>
+    <!-- side bang -->
+    <path d="M30 38 Q34 28 44 26 Q42 32 36 36 Q33 38 30 42 Z" fill="url(#hair-${uid})"/>
+    <!-- scrunchie/hair tie -->
+    <circle cx="78" cy="36" r="3.5" fill="#ff8fa3"/>
+    <circle cx="78" cy="36" r="1.5" fill="#ffffff" opacity="0.5"/>
+    <!-- cheeks - rosy youthful -->
+    <ellipse cx="37" cy="52" rx="6" ry="4" fill="url(#cheek-${uid})"/>
+    <ellipse cx="63" cy="52" rx="6" ry="4" fill="url(#cheek-${uid})"/>
+    <!-- eyebrows - thin and friendly -->
+    <path d="M38 42 Q42 40 46 42" stroke="#4a2614" stroke-width="1.3" fill="none" stroke-linecap="round"/>
+    <path d="M54 42 Q58 40 62 42" stroke="#4a2614" stroke-width="1.3" fill="none" stroke-linecap="round"/>
+    <!-- eyes - big, friendly, with lashes -->
+    <ellipse cx="42" cy="48" rx="2.5" ry="3" fill="#4a2614"/>
+    <ellipse cx="58" cy="48" rx="2.5" ry="3" fill="#4a2614"/>
+    <!-- eye highlights -->
+    <circle cx="43" cy="47" r="1" fill="white"/>
+    <circle cx="59" cy="47" r="1" fill="white"/>
+    <circle cx="41" cy="49" r="0.4" fill="white"/>
+    <circle cx="57" cy="49" r="0.4" fill="white"/>
+    <!-- eyelashes - subtle -->
+    <path d="M40 45.5 L39 44" stroke="#4a2614" stroke-width="0.8" stroke-linecap="round"/>
+    <path d="M44 45.5 L45 44" stroke="#4a2614" stroke-width="0.8" stroke-linecap="round"/>
+    <path d="M56 45.5 L55 44" stroke="#4a2614" stroke-width="0.8" stroke-linecap="round"/>
+    <path d="M60 45.5 L61 44" stroke="#4a2614" stroke-width="0.8" stroke-linecap="round"/>
+    <!-- nose - tiny cute -->
+    <ellipse cx="50" cy="55" rx="1.5" ry="1.2" fill="#d4a080" opacity="0.5"/>
+    <!-- smile - happy and youthful -->
+    <path d="M43 60 Q50 65 57 60" stroke="#c44060" stroke-width="2" fill="none" stroke-linecap="round"/>
+    <!-- lips highlight -->
+    <path d="M46 62 Q50 64 54 62" stroke="#ff8fa3" stroke-width="0.8" fill="none" stroke-linecap="round" opacity="0.6"/>
+    <!-- small earring (stud) -->
+    <circle cx="28" cy="52" r="1.5" fill="#e8b86a"/>
+  </svg>`;
+}
+
+
+// ===================== Hero Illustrations =====================
+const heroSVG = {
+  mental_health: `<svg viewBox="0 0 400 160" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid slice" style="width:100%;height:100%">
+    <defs>
+      <linearGradient id="bg-mh" x1="0" x2="0" y2="1"><stop offset="0" stop-color="#fde5ec"/><stop offset="1" stop-color="#f5c8d5"/></linearGradient>
+      <linearGradient id="brain-g" x1="0" x2="1" y2="1"><stop offset="0" stop-color="#8b5a8c"/><stop offset="1" stop-color="#d97a8c"/></linearGradient>
+    </defs>
+    <rect width="400" height="160" fill="url(#bg-mh)"/>
+    <circle cx="70" cy="40" r="25" fill="#fff" opacity="0.5"/>
+    <circle cx="340" cy="120" r="35" fill="#fff" opacity="0.4"/>
+    <circle cx="60" cy="120" r="18" fill="#e8b86a" opacity="0.4"/>
+    <g transform="translate(160 30)">
+      <path d="M40 28 Q40 12 28 12 Q16 12 16 28 Q16 42 40 60 Q64 42 64 28 Q64 12 52 12 Q40 12 40 28 Z" fill="url(#brain-g)"/>
+      <g fill="#e8b86a">
+        <circle cx="10" cy="20" r="2"/>
+        <circle cx="80" cy="20" r="2.5"/>
+        <circle cx="75" cy="50" r="1.5"/>
+      </g>
+      <circle cx="40" cy="35" r="3" fill="white" opacity="0.6"/>
+    </g>
+    <path d="M0 145 Q100 135 200 142 Q300 148 400 140 L400 160 L0 160 Z" fill="#8b5a8c" opacity="0.15"/>
+  </svg>`,
+  families: `<svg viewBox="0 0 400 160" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid slice" style="width:100%;height:100%">
+    <defs><linearGradient id="bg-fam" x1="0" x2="0" y2="1"><stop offset="0" stop-color="#e8f3e0"/><stop offset="1" stop-color="#c5e0b8"/></linearGradient></defs>
+    <rect width="400" height="160" fill="url(#bg-fam)"/>
+    <circle cx="60" cy="40" r="25" fill="#fff" opacity="0.5"/>
+    <circle cx="340" cy="120" r="35" fill="#fff" opacity="0.5"/>
+    <g transform="translate(120 30)">
+      <circle cx="25" cy="25" r="14" fill="#8b5a8c"/>
+      <path d="M8 90 Q8 50 25 50 Q42 50 42 90 Z" fill="#8b5a8c"/>
+      <circle cx="22" cy="25" r="1.5" fill="#fff"/>
+      <circle cx="28" cy="25" r="1.5" fill="#fff"/>
+      <path d="M22 32 Q25 34 28 32" stroke="#fff" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+      <circle cx="80" cy="22" r="13" fill="#d97a8c"/>
+      <path d="M64 90 Q64 47 80 47 Q96 47 96 90 Z" fill="#d97a8c"/>
+      <circle cx="77" cy="22" r="1.5" fill="#fff"/>
+      <circle cx="83" cy="22" r="1.5" fill="#fff"/>
+      <path d="M77 29 Q80 31 83 29" stroke="#fff" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+      <circle cx="125" cy="32" r="10" fill="#e8b86a"/>
+      <path d="M114 90 Q114 55 125 55 Q136 55 136 90 Z" fill="#e8b86a"/>
+      <circle cx="122" cy="32" r="1.2" fill="#fff"/>
+      <circle cx="128" cy="32" r="1.2" fill="#fff"/>
+      <path d="M122 38 Q125 40 128 38" stroke="#fff" stroke-width="1.2" fill="none" stroke-linecap="round"/>
+      <path d="M53 35 Q50 30 47 32 Q44 30 41 32 Q38 35 41 40 L47 46 L53 40 Q56 35 53 35 Z" fill="#e84a6a"/>
+      <path d="M105 38 Q103 35 101 36 Q99 35 97 36 Q95 38 97 41 L101 45 L105 41 Q107 38 105 38 Z" fill="#e84a6a"/>
+    </g>
+  </svg>`,
+  teens: `<svg viewBox="0 0 400 160" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid slice" style="width:100%;height:100%">
+    <defs><linearGradient id="bg-tn" x1="0" x2="0" y2="1"><stop offset="0" stop-color="#fef0d9"/><stop offset="1" stop-color="#fdd9a8"/></linearGradient></defs>
+    <rect width="400" height="160" fill="url(#bg-tn)"/>
+    <circle cx="340" cy="50" r="30" fill="#fff" opacity="0.5"/>
+    <circle cx="50" cy="120" r="30" fill="#fff" opacity="0.4"/>
+    <g transform="translate(80 35)">
+      <circle cx="35" cy="28" r="14" fill="#8b5a8c"/>
+      <path d="M18 90 Q18 52 35 52 Q52 52 52 90 Z" fill="#8b5a8c"/>
+      <circle cx="32" cy="28" r="1.5" fill="#fff"/>
+      <circle cx="38" cy="28" r="1.5" fill="#fff"/>
+      <path d="M32 35 Q35 37 38 35" stroke="#fff" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+      <rect x="46" y="60" width="10" height="14" rx="2" fill="#3d2418"/>
+      <rect x="48" y="62" width="6" height="9" fill="#7cd0e8"/>
+      <circle cx="95" cy="25" r="14" fill="#d97a8c"/>
+      <path d="M78 90 Q78 49 95 49 Q112 49 112 90 Z" fill="#d97a8c"/>
+      <circle cx="92" cy="25" r="1.5" fill="#fff"/>
+      <circle cx="98" cy="25" r="1.5" fill="#fff"/>
+      <path d="M92 32 Q95 34 98 32" stroke="#fff" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+      <circle cx="160" cy="30" r="14" fill="#e8b86a"/>
+      <path d="M143 90 Q143 54 160 54 Q177 54 177 90 Z" fill="#e8b86a"/>
+      <circle cx="157" cy="30" r="1.5" fill="#fff"/>
+      <circle cx="163" cy="30" r="1.5" fill="#fff"/>
+      <path d="M157 37 Q160 39 163 37" stroke="#fff" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+      <path d="M147 27 Q160 14 173 27" stroke="#3d2418" stroke-width="3" fill="none"/>
+      <rect x="144" y="27" width="5" height="8" rx="2" fill="#3d2418"/>
+      <rect x="171" y="27" width="5" height="8" rx="2" fill="#3d2418"/>
+    </g>
+    <g fill="#8b5a8c" opacity="0.6">
+      <circle cx="290" cy="50" r="3"/>
+      <rect x="290" y="35" width="1.5" height="15"/>
+      <circle cx="310" cy="80" r="3"/>
+      <rect x="310" y="65" width="1.5" height="15"/>
+    </g>
+  </svg>`,
+  elderly: `<svg viewBox="0 0 400 160" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid slice" style="width:100%;height:100%">
+    <defs><linearGradient id="bg-el" x1="0" x2="0" y2="1"><stop offset="0" stop-color="#fef0d9"/><stop offset="1" stop-color="#fae5c8"/></linearGradient></defs>
+    <rect width="400" height="160" fill="url(#bg-el)"/>
+    <circle cx="60" cy="40" r="25" fill="#fff" opacity="0.5"/>
+    <circle cx="350" cy="120" r="35" fill="#fff" opacity="0.4"/>
+    <g transform="translate(130 25)">
+      <circle cx="50" cy="22" r="15" fill="#d4a8b8"/>
+      <path d="M37 22 Q35 8 50 8 Q65 8 63 22 Q60 18 50 18 Q40 18 37 22 Z" fill="#f5f0f5"/>
+      <path d="M30 95 Q30 50 50 50 Q70 50 70 95 Z" fill="#8b5a8c"/>
+      <circle cx="44" cy="22" r="3" fill="none" stroke="#3d2418" stroke-width="1.5"/>
+      <circle cx="56" cy="22" r="3" fill="none" stroke="#3d2418" stroke-width="1.5"/>
+      <line x1="47" y1="22" x2="53" y2="22" stroke="#3d2418" stroke-width="1.5"/>
+      <path d="M44 30 Q50 33 56 30" stroke="#a04050" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+      <path d="M75 40 Q72 38 75 35 Q78 38 75 40" fill="none" stroke="#8b5a3a" stroke-width="3" stroke-linecap="round"/>
+      <line x1="75" y1="40" x2="80" y2="95" stroke="#8b5a3a" stroke-width="3" stroke-linecap="round"/>
+      <g transform="translate(95 50)">
+        <ellipse cx="10" cy="10" rx="14" ry="9" fill="#f5cba8"/>
+        <ellipse cx="6" cy="6" rx="3" ry="6" fill="#f5cba8"/>
+        <ellipse cx="11" cy="4" rx="3" ry="7" fill="#f5cba8"/>
+        <ellipse cx="16" cy="6" rx="3" ry="6" fill="#f5cba8"/>
+      </g>
+      <path d="M115 18 Q113 12 109 14 Q105 12 103 18 Q103 24 115 32 Q127 24 127 18 Q125 12 121 14 Q117 12 115 18 Z" fill="#e84a6a"/>
+    </g>
+  </svg>`,
+  haruv: `<svg viewBox="0 0 400 160" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid slice" style="width:100%;height:100%">
+    <defs>
+      <linearGradient id="bg-h" x1="0" x2="0" y2="1"><stop offset="0" stop-color="#e8e0f0"/><stop offset="1" stop-color="#d4c8e0"/></linearGradient>
+      <linearGradient id="shield-g" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#8b5a8c"/><stop offset="1" stop-color="#5a3a5c"/></linearGradient>
+    </defs>
+    <rect width="400" height="160" fill="url(#bg-h)"/>
+    <circle cx="60" cy="40" r="25" fill="#fff" opacity="0.5"/>
+    <circle cx="340" cy="120" r="35" fill="#fff" opacity="0.5"/>
+    <g transform="translate(150 20)">
+      <path d="M50 8 Q15 8 15 35 Q15 75 50 100 Q85 75 85 35 Q85 8 50 8 Z" fill="url(#shield-g)"/>
+      <circle cx="50" cy="38" r="10" fill="#fde5ec"/>
+      <path d="M38 75 Q38 50 50 50 Q62 50 62 75 Z" fill="#fde5ec"/>
+      <circle cx="47" cy="38" r="1.3" fill="#3d2418"/>
+      <circle cx="53" cy="38" r="1.3" fill="#3d2418"/>
+      <path d="M46 44 Q50 47 54 44" stroke="#a04050" stroke-width="1.2" fill="none" stroke-linecap="round"/>
+      <path d="M0 30 Q-2 26 -5 28 Q-8 26 -10 30 Q-10 35 0 42 Q10 35 10 30 Q8 26 5 28 Q2 26 0 30 Z" fill="#e84a6a"/>
+      <path d="M100 30 Q98 26 95 28 Q92 26 90 30 Q90 35 100 42 Q110 35 110 30 Q108 26 105 28 Q102 26 100 30 Z" fill="#e84a6a"/>
+    </g>
+  </svg>`,
+  tikun: `<svg viewBox="0 0 400 160" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid slice" style="width:100%;height:100%">
+    <defs><linearGradient id="bg-mu" x1="0" x2="0" y2="1"><stop offset="0" stop-color="#fde5ec"/><stop offset="1" stop-color="#fef0d9"/></linearGradient></defs>
+    <rect width="400" height="160" fill="url(#bg-mu)"/>
+    <g transform="translate(100 30)">
+      <path d="M0 0 L40 0 Q40 10 50 10 Q60 10 60 0 L100 0 L100 40 Q90 40 90 50 Q90 60 100 60 L100 100 L60 100 Q60 90 50 90 Q40 90 40 100 L0 100 Z" fill="#8b5a8c"/>
+      <path d="M110 0 L150 0 Q150 10 160 10 Q170 10 170 0 L210 0 L210 40 Q200 40 200 50 Q200 60 210 60 L210 100 L170 100 Q170 90 160 90 Q150 90 150 100 L110 100 Z" fill="#d97a8c"/>
+      <circle cx="50" cy="50" r="22" fill="#fef0d9"/>
+      <circle cx="44" cy="46" r="2" fill="#3d2418"/>
+      <circle cx="56" cy="46" r="2" fill="#3d2418"/>
+      <path d="M42 56 Q50 62 58 56" stroke="#a04050" stroke-width="2" fill="none" stroke-linecap="round"/>
+      <circle cx="160" cy="50" r="22" fill="#fef0d9"/>
+      <circle cx="154" cy="46" r="2" fill="#3d2418"/>
+      <circle cx="166" cy="46" r="2" fill="#3d2418"/>
+      <path d="M152 56 Q160 62 168 56" stroke="#a04050" stroke-width="2" fill="none" stroke-linecap="round"/>
+    </g>
+    <g fill="#e8b86a">
+      <circle cx="50" cy="40" r="3"/>
+      <circle cx="370" cy="120" r="4"/>
+      <circle cx="350" cy="40" r="2.5"/>
+    </g>
+  </svg>`,
+  hadassah: `<svg viewBox="0 0 400 160" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid slice" style="width:100%;height:100%">
+    <defs><linearGradient id="bg-hl" x1="0" x2="0" y2="1"><stop offset="0" stop-color="#d9eef5"/><stop offset="1" stop-color="#b8dde8"/></linearGradient></defs>
+    <rect width="400" height="160" fill="url(#bg-hl)"/>
+    <rect x="0" y="100" width="400" height="60" fill="#a8d4e0" opacity="0.5"/>
+    <circle cx="60" cy="40" r="25" fill="#fff" opacity="0.6"/>
+    <g transform="translate(140 30)">
+      <rect x="0" y="25" width="120" height="80" rx="6" fill="#fff" stroke="#8b5a8c" stroke-width="2.5"/>
+      <path d="M60 0 L60 25 L0 25 L0 18 Z" fill="#8b5a8c"/>
+      <path d="M60 0 L60 25 L120 25 L120 18 Z" fill="#8b5a8c"/>
+      <g transform="translate(50 35)">
+        <rect x="-3" y="0" width="6" height="20" rx="1" fill="#e84a6a"/>
+        <rect x="-10" y="7" width="20" height="6" rx="1" fill="#e84a6a"/>
+      </g>
+      <rect x="10" y="65" width="15" height="15" rx="2" fill="#d9eef5"/>
+      <rect x="32" y="65" width="15" height="15" rx="2" fill="#d9eef5"/>
+      <rect x="73" y="65" width="15" height="15" rx="2" fill="#d9eef5"/>
+      <rect x="95" y="65" width="15" height="15" rx="2" fill="#d9eef5"/>
+      <rect x="10" y="85" width="15" height="15" rx="2" fill="#d9eef5"/>
+      <rect x="32" y="85" width="15" height="15" rx="2" fill="#d9eef5"/>
+      <rect x="73" y="85" width="15" height="15" rx="2" fill="#d9eef5"/>
+      <rect x="95" y="85" width="15" height="15" rx="2" fill="#d9eef5"/>
+      <rect x="52" y="80" width="16" height="25" rx="2" fill="#8b5a8c"/>
+    </g>
+  </svg>`,
+  trauma: `<svg viewBox="0 0 400 160" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid slice" style="width:100%;height:100%">
+    <defs><linearGradient id="bg-tr" x1="0" x2="0" y2="1"><stop offset="0" stop-color="#fde5ec"/><stop offset="1" stop-color="#f5cba8"/></linearGradient></defs>
+    <rect width="400" height="160" fill="url(#bg-tr)"/>
+    <circle cx="60" cy="40" r="25" fill="#fff" opacity="0.5"/>
+    <g transform="translate(150 25)">
+      <path d="M5 80 Q-5 80 -5 70 Q-5 50 15 45 L20 70 Q22 80 18 82 Z" fill="#f5cba8"/>
+      <path d="M95 80 Q105 80 105 70 Q105 50 85 45 L80 70 Q78 80 82 82 Z" fill="#f5cba8"/>
+      <path d="M50 30 Q50 12 35 12 Q20 12 20 30 Q20 50 50 75 Q80 50 80 30 Q80 12 65 12 Q50 12 50 30 Z" fill="#e84a6a"/>
+      <path d="M22 42 L32 42 L36 32 L42 52 L48 38 L55 42 L78 42" stroke="#fff" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+      <g fill="#e8b86a">
+        <circle cx="0" cy="20" r="2.5"/>
+        <circle cx="100" cy="25" r="2.5"/>
+        <circle cx="50" cy="0" r="2"/>
+      </g>
+    </g>
+  </svg>`,
+  rehab: `<svg viewBox="0 0 400 160" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid slice" style="width:100%;height:100%">
+    <defs><linearGradient id="bg-rh" x1="0" x2="0" y2="1"><stop offset="0" stop-color="#e0eee8"/><stop offset="1" stop-color="#c0dccc"/></linearGradient></defs>
+    <rect width="400" height="160" fill="url(#bg-rh)"/>
+    <circle cx="60" cy="40" r="25" fill="#fff" opacity="0.5"/>
+    <circle cx="340" cy="120" r="35" fill="#fff" opacity="0.4"/>
+    <g transform="translate(150 25)">
+      <circle cx="40" cy="90" r="25" fill="none" stroke="#8b5a8c" stroke-width="4"/>
+      <circle cx="40" cy="90" r="6" fill="#8b5a8c"/>
+      <line x1="40" y1="65" x2="40" y2="115" stroke="#8b5a8c" stroke-width="2"/>
+      <line x1="15" y1="90" x2="65" y2="90" stroke="#8b5a8c" stroke-width="2"/>
+      <line x1="22" y1="72" x2="58" y2="108" stroke="#8b5a8c" stroke-width="2"/>
+      <line x1="22" y1="108" x2="58" y2="72" stroke="#8b5a8c" stroke-width="2"/>
+      <path d="M30 70 L30 60 L50 60 L50 70" stroke="#8b5a8c" stroke-width="3" fill="none"/>
+      <circle cx="50" cy="35" r="12" fill="#f5cba8"/>
+      <path d="M40 33 Q40 22 50 22 Q60 22 60 33 Q60 36 58 36 Q55 32 50 32 Q45 32 42 36 Q40 36 40 33 Z" fill="#3d2418"/>
+      <circle cx="47" cy="36" r="1.3" fill="#3d2418"/>
+      <circle cx="53" cy="36" r="1.3" fill="#3d2418"/>
+      <path d="M46 42 Q50 45 54 42" stroke="#a04050" stroke-width="1.2" fill="none" stroke-linecap="round"/>
+      <path d="M38 60 Q38 47 50 47 Q62 47 62 60 L62 70 L38 70 Z" fill="#d97a8c"/>
+      <path d="M62 55 Q75 45 80 30 Q82 25 78 23 Q73 22 71 30 Q67 42 60 50 Z" fill="#f5cba8"/>
+      <g transform="translate(85 15)">
+        <path d="M0 -8 L2 -3 L7 -2 L3 2 L4 8 L0 5 L-4 8 L-3 2 L-7 -2 L-2 -3 Z" fill="#e8b86a"/>
+      </g>
+    </g>
+  </svg>`,
+  employment: `<svg viewBox="0 0 400 160" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid slice" style="width:100%;height:100%">
+    <defs><linearGradient id="bg-em" x1="0" x2="0" y2="1"><stop offset="0" stop-color="#fdf0d9"/><stop offset="1" stop-color="#fde5ec"/></linearGradient></defs>
+    <rect width="400" height="160" fill="url(#bg-em)"/>
+    <circle cx="60" cy="40" r="25" fill="#fff" opacity="0.5"/>
+    <circle cx="340" cy="120" r="35" fill="#fff" opacity="0.4"/>
+    <g transform="translate(140 28)">
+      <!-- Briefcase -->
+      <rect x="0" y="30" width="100" height="65" rx="6" fill="#8b5a8c"/>
+      <rect x="35" y="20" width="30" height="15" rx="3" fill="#8b5a8c"/>
+      <rect x="0" y="48" width="100" height="6" fill="#5a3a5c"/>
+      <rect x="46" y="48" width="8" height="12" rx="1" fill="#e8b86a"/>
+      <!-- Person climbing stairs (success) -->
+      <g transform="translate(115 0)">
+        <rect x="0" y="80" width="20" height="15" fill="#d97a8c"/>
+        <rect x="22" y="65" width="20" height="30" fill="#d97a8c"/>
+        <rect x="44" y="45" width="20" height="50" fill="#d97a8c"/>
+        <!-- person on top -->
+        <circle cx="54" cy="32" r="9" fill="#f5cba8"/>
+        <path d="M46 30 Q46 22 54 22 Q62 22 62 30 Q60 28 54 28 Q48 28 46 30 Z" fill="#3d2418"/>
+        <path d="M44 45 Q44 38 54 38 Q64 38 64 45 Z" fill="#8b5a8c"/>
+        <!-- Star above -->
+        <path d="M54 8 L57 16 L65 17 L59 22 L61 30 L54 26 L47 30 L49 22 L43 17 L51 16 Z" fill="#e8b86a"/>
+      </g>
+    </g>
+  </svg>`,
+  shaarey: `<svg viewBox="0 0 400 160" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid slice" style="width:100%;height:100%">
+    <defs><linearGradient id="bg-sh" x1="0" x2="0" y2="1"><stop offset="0" stop-color="#e0e5f0"/><stop offset="1" stop-color="#d4c8e0"/></linearGradient></defs>
+    <rect width="400" height="160" fill="url(#bg-sh)"/>
+    <rect x="0" y="100" width="400" height="60" fill="#c8b8d4" opacity="0.5"/>
+    <circle cx="60" cy="35" r="22" fill="#fff" opacity="0.5"/>
+    <circle cx="340" cy="35" r="18" fill="#fff" opacity="0.5"/>
+    <g transform="translate(130 25)">
+      <!-- Main hospital building with arched windows (Sha'are Tzedek style) -->
+      <rect x="0" y="30" width="140" height="80" rx="4" fill="#fff" stroke="#8b5a8c" stroke-width="2.5"/>
+      <!-- Decorative arch top -->
+      <path d="M70 0 Q40 0 30 30 L110 30 Q100 0 70 0 Z" fill="#8b5a8c"/>
+      <circle cx="70" cy="15" r="8" fill="#e8b86a"/>
+      <!-- Cross -->
+      <g transform="translate(70 45)">
+        <rect x="-3" y="0" width="6" height="20" rx="1" fill="#e84a6a"/>
+        <rect x="-10" y="7" width="20" height="6" rx="1" fill="#e84a6a"/>
+      </g>
+      <!-- Arched windows -->
+      <path d="M15 78 Q15 68 22 68 Q29 68 29 78 L29 90 L15 90 Z" fill="#d97a8c"/>
+      <path d="M37 78 Q37 68 44 68 Q51 68 51 78 L51 90 L37 90 Z" fill="#d97a8c"/>
+      <path d="M89 78 Q89 68 96 68 Q103 68 103 78 L103 90 L89 90 Z" fill="#d97a8c"/>
+      <path d="M111 78 Q111 68 118 68 Q125 68 125 78 L125 90 L111 90 Z" fill="#d97a8c"/>
+      <!-- Door -->
+      <path d="M60 110 Q60 95 70 95 Q80 95 80 110 Z" fill="#8b5a8c"/>
+    </g>
+  </svg>`,
+  maaleh_adumim: `<svg viewBox="0 0 400 160" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid slice" style="width:100%;height:100%">
+    <defs><linearGradient id="bg-ma" x1="0" x2="0" y2="1"><stop offset="0" stop-color="#fde9d4"/><stop offset="1" stop-color="#e8d4c0"/></linearGradient></defs>
+    <rect width="400" height="160" fill="url(#bg-ma)"/>
+    <!-- Sun -->
+    <circle cx="60" cy="40" r="18" fill="#e8b86a"/>
+    <g stroke="#e8b86a" stroke-width="2" stroke-linecap="round">
+      <line x1="60" y1="15" x2="60" y2="20"/>
+      <line x1="60" y1="60" x2="60" y2="65"/>
+      <line x1="35" y1="40" x2="40" y2="40"/>
+      <line x1="80" y1="40" x2="85" y2="40"/>
+    </g>
+    <!-- Desert hills -->
+    <path d="M0 110 Q100 90 200 110 Q300 130 400 110 L400 160 L0 160 Z" fill="#c5a07a" opacity="0.6"/>
+    <!-- Life cycle - multi-generational family -->
+    <g transform="translate(105 35)">
+      <!-- Grandparent -->
+      <circle cx="20" cy="25" r="11" fill="#a0a09d"/>
+      <path d="M9 75 Q9 50 20 50 Q31 50 31 75 Z" fill="#8b5a8c"/>
+      <circle cx="17" cy="25" r="1.3" fill="#fff"/>
+      <circle cx="23" cy="25" r="1.3" fill="#fff"/>
+      <path d="M17 30 Q20 32 23 30" stroke="#fff" stroke-width="1.2" fill="none" stroke-linecap="round"/>
+      <!-- Parent -->
+      <circle cx="65" cy="22" r="11" fill="#d97a8c"/>
+      <path d="M54 75 Q54 47 65 47 Q76 47 76 75 Z" fill="#d97a8c"/>
+      <circle cx="62" cy="22" r="1.3" fill="#fff"/>
+      <circle cx="68" cy="22" r="1.3" fill="#fff"/>
+      <path d="M62 27 Q65 29 68 27" stroke="#fff" stroke-width="1.2" fill="none" stroke-linecap="round"/>
+      <!-- Teen -->
+      <circle cx="110" cy="25" r="10" fill="#e8b86a"/>
+      <path d="M100 75 Q100 50 110 50 Q120 50 120 75 Z" fill="#e8b86a"/>
+      <circle cx="107" cy="25" r="1.2" fill="#fff"/>
+      <circle cx="113" cy="25" r="1.2" fill="#fff"/>
+      <path d="M107 30 Q110 32 113 30" stroke="#fff" stroke-width="1.2" fill="none" stroke-linecap="round"/>
+      <!-- Child -->
+      <circle cx="150" cy="32" r="8" fill="#5e9a8a"/>
+      <path d="M141 75 Q141 55 150 55 Q159 55 159 75 Z" fill="#5e9a8a"/>
+      <circle cx="148" cy="32" r="1" fill="#fff"/>
+      <circle cx="152" cy="32" r="1" fill="#fff"/>
+      <path d="M148 36 Q150 38 152 36" stroke="#fff" stroke-width="1" fill="none" stroke-linecap="round"/>
+      <!-- Connecting line -->
+      <path d="M30 65 Q90 70 160 65" stroke="#fff" stroke-width="2" fill="none" stroke-dasharray="4 3"/>
+    </g>
+  </svg>`,
+  merkaz_haaretz: `<svg viewBox="0 0 400 160" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid slice" style="width:100%;height:100%">
+    <defs><linearGradient id="bg-mh2" x1="0" x2="0" y2="1"><stop offset="0" stop-color="#d4eee4"/><stop offset="1" stop-color="#b8dde0"/></linearGradient></defs>
+    <rect width="400" height="160" fill="url(#bg-mh2)"/>
+    <!-- Map of Israel (stylized) -->
+    <g transform="translate(140 20)">
+      <!-- Country shape (very stylized) -->
+      <path d="M50 0 L60 25 L70 50 L65 75 L60 105 L55 120 L45 120 L40 110 L35 90 L40 70 L45 50 L42 25 Z" fill="#8b5a8c" opacity="0.3"/>
+      <!-- Jerusalem marker (top) -->
+      <circle cx="48" cy="80" r="6" fill="#d97a8c"/>
+      <path d="M48 74 L48 85" stroke="#d97a8c" stroke-width="2"/>
+      <text x="55" y="85" font-size="9" fill="#5a3a5c" font-family="sans-serif" font-weight="bold">י-ם</text>
+      <!-- Center markers (highlighted) -->
+      <g>
+        <circle cx="45" cy="55" r="8" fill="#e8b86a"/>
+        <circle cx="45" cy="55" r="3" fill="#fff"/>
+        <circle cx="35" cy="40" r="6" fill="#e8b86a"/>
+        <circle cx="35" cy="40" r="2" fill="#fff"/>
+        <circle cx="50" cy="65" r="5" fill="#e8b86a"/>
+        <circle cx="50" cy="65" r="1.5" fill="#fff"/>
+      </g>
+      <!-- "Center" label -->
+      <text x="80" y="55" font-size="12" fill="#5a3a5c" font-family="sans-serif" font-weight="bold">מרכז הארץ</text>
+      <!-- arrow from center to Jerusalem -->
+      <path d="M55 55 Q60 70 55 78" stroke="#d97a8c" stroke-width="2" fill="none" stroke-dasharray="3 2" marker-end="url(#arr)"/>
+    </g>
+  </svg>`,
+  east_jer: `<svg viewBox="0 0 400 160" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid slice" style="width:100%;height:100%">
+    <defs><linearGradient id="bg-ej" x1="0" x2="0" y2="1"><stop offset="0" stop-color="#fde9d4"/><stop offset="1" stop-color="#e8d8b8"/></linearGradient></defs>
+    <rect width="400" height="160" fill="url(#bg-ej)"/>
+    <path d="M0 120 L400 120 L400 160 L0 160 Z" fill="#c5a07a" opacity="0.4"/>
+    <!-- Stylized old city with dome and minaret -->
+    <g transform="translate(100 25)">
+      <!-- Wall -->
+      <rect x="0" y="60" width="200" height="60" fill="#d4a878"/>
+      <rect x="0" y="58" width="200" height="6" fill="#b8895a"/>
+      <!-- Wall battlements -->
+      <rect x="10" y="55" width="8" height="6" fill="#d4a878"/>
+      <rect x="25" y="55" width="8" height="6" fill="#d4a878"/>
+      <rect x="40" y="55" width="8" height="6" fill="#d4a878"/>
+      <rect x="55" y="55" width="8" height="6" fill="#d4a878"/>
+      <rect x="70" y="55" width="8" height="6" fill="#d4a878"/>
+      <rect x="135" y="55" width="8" height="6" fill="#d4a878"/>
+      <rect x="150" y="55" width="8" height="6" fill="#d4a878"/>
+      <rect x="165" y="55" width="8" height="6" fill="#d4a878"/>
+      <rect x="180" y="55" width="8" height="6" fill="#d4a878"/>
+      <!-- Dome (golden) -->
+      <ellipse cx="100" cy="55" rx="28" ry="22" fill="#e8b86a"/>
+      <rect x="95" y="55" width="10" height="6" fill="#e8b86a"/>
+      <!-- Dome top -->
+      <path d="M100 25 L100 33" stroke="#e8b86a" stroke-width="2"/>
+      <circle cx="100" cy="25" r="3" fill="#e8b86a"/>
+      <!-- Octagonal base -->
+      <rect x="78" y="55" width="44" height="15" fill="#d4a8b8"/>
+      <rect x="82" y="60" width="6" height="8" rx="3" fill="#8b5a8c"/>
+      <rect x="92" y="60" width="6" height="8" rx="3" fill="#8b5a8c"/>
+      <rect x="102" y="60" width="6" height="8" rx="3" fill="#8b5a8c"/>
+      <rect x="112" y="60" width="6" height="8" rx="3" fill="#8b5a8c"/>
+      <!-- Minaret -->
+      <rect x="160" y="20" width="14" height="40" fill="#fdf0db"/>
+      <path d="M157 20 L177 20 L172 14 L162 14 Z" fill="#8b5a8c"/>
+      <path d="M167 14 L167 4" stroke="#e8b86a" stroke-width="2"/>
+      <circle cx="167" cy="5" r="2" fill="#e8b86a"/>
+      <!-- Gate -->
+      <path d="M40 120 Q40 88 55 88 Q70 88 70 120 Z" fill="#8b5a8c"/>
+      <!-- Building/door -->
+      <rect x="180" y="78" width="20" height="42" fill="#a8745a"/>
+    </g>
+  </svg>`,
+  community: `<svg viewBox="0 0 400 160" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid slice" style="width:100%;height:100%">
+    <defs><linearGradient id="bg-cm2" x1="0" x2="0" y2="1"><stop offset="0" stop-color="#fde5ec"/><stop offset="1" stop-color="#d4eee4"/></linearGradient></defs>
+    <rect width="400" height="160" fill="url(#bg-cm2)"/>
+    <circle cx="60" cy="40" r="25" fill="#fff" opacity="0.5"/>
+    <circle cx="340" cy="120" r="35" fill="#fff" opacity="0.4"/>
+    <!-- Connected community network -->
+    <g transform="translate(80 25)">
+      <!-- Central node -->
+      <circle cx="120" cy="55" r="22" fill="#8b5a8c"/>
+      <circle cx="120" cy="55" r="14" fill="#fff" opacity="0.3"/>
+      <path d="M111 55 L115 60 L130 47" stroke="#fff" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+      <!-- Surrounding nodes -->
+      <circle cx="30" cy="30" r="14" fill="#d97a8c"/>
+      <path d="M17 80 Q17 50 30 50 Q43 50 43 80 Z" fill="#d97a8c" transform="translate(0 -5)"/>
+      <circle cx="27" cy="30" r="1.3" fill="#fff"/>
+      <circle cx="33" cy="30" r="1.3" fill="#fff"/>
+      <path d="M27 35 Q30 37 33 35" stroke="#fff" stroke-width="1.2" fill="none" stroke-linecap="round"/>
+
+      <circle cx="220" cy="30" r="14" fill="#e8b86a"/>
+      <path d="M207 80 Q207 50 220 50 Q233 50 233 80 Z" fill="#e8b86a" transform="translate(0 -5)"/>
+      <circle cx="217" cy="30" r="1.3" fill="#fff"/>
+      <circle cx="223" cy="30" r="1.3" fill="#fff"/>
+      <path d="M217 35 Q220 37 223 35" stroke="#fff" stroke-width="1.2" fill="none" stroke-linecap="round"/>
+
+      <circle cx="30" cy="90" r="14" fill="#5e9a8a"/>
+      <path d="M17 130 Q17 105 30 105 Q43 105 43 130 Z" fill="#5e9a8a"/>
+      <circle cx="27" cy="90" r="1.3" fill="#fff"/>
+      <circle cx="33" cy="90" r="1.3" fill="#fff"/>
+      <path d="M27 95 Q30 97 33 95" stroke="#fff" stroke-width="1.2" fill="none" stroke-linecap="round"/>
+
+      <circle cx="220" cy="90" r="14" fill="#a86fa1"/>
+      <path d="M207 130 Q207 105 220 105 Q233 105 233 130 Z" fill="#a86fa1"/>
+      <circle cx="217" cy="90" r="1.3" fill="#fff"/>
+      <circle cx="223" cy="90" r="1.3" fill="#fff"/>
+      <path d="M217 95 Q220 97 223 95" stroke="#fff" stroke-width="1.2" fill="none" stroke-linecap="round"/>
+
+      <!-- Connecting lines -->
+      <line x1="44" y1="42" x2="105" y2="50" stroke="#8b5a8c" stroke-width="2" stroke-dasharray="3 3"/>
+      <line x1="207" y1="42" x2="138" y2="50" stroke="#8b5a8c" stroke-width="2" stroke-dasharray="3 3"/>
+      <line x1="44" y1="78" x2="105" y2="65" stroke="#8b5a8c" stroke-width="2" stroke-dasharray="3 3"/>
+      <line x1="207" y1="78" x2="138" y2="65" stroke="#8b5a8c" stroke-width="2" stroke-dasharray="3 3"/>
+    </g>
+  </svg>`
+};
+
+// ===================== Data =====================
+const data = {
+  general: {
+    link: "https://sw.huji.ac.il/book/%D7%94%D7%9B%D7%A9%D7%A8%D7%94-%D7%9E%D7%A7%D7%A6%D7%95%D7%A2%D7%99%D7%AA-0",
+    content: `<h4>מידע על ההכשרה המקצועית</h4>
+    <p>ההכשרה המקצועית היא מרכיב מרכזי ומשמעותי בלימודי התואר בעבודה סוציאלית, ומאפשרת לסטודנטים לחבר בין הידע התיאורטי הנרכש בכיתה לבין ההתנסות המעשית בשדה.</p>
+    <p>הסטודנטים משתלבים בהכשרה המקצועית במסגרת תוכנית הבוגר בשנים ב' ו-ג', ובמסגרת תוכנית ההשלמות בשנים א' ו-ב'. בכל אחת משנות ההכשרה הם משובצים לארגון הכשרה שונה, המאפשר להם להיחשף למגוון תחומי עשייה ואוכלוסיות יעד.</p>
+    <div class="section-label"><i class="ti ti-clock-hour-4"></i> היקף ההכשרה</div>
+    <p>ההתנסות המעשית מתקיימת לאורך כל השנה האקדמית, בהיקף של <strong>יומיים בשבוע — 16 שעות שבועיות</strong>.</p>
+    <p>36 נ"ז בלימודי הכשרה מקצועית: שנה ב' — 12 נ"ז + 4 בסדנה; שנה ג' — 16 נ"ז + 4 בסדנה.</p>
+    <div class="section-label"><i class="ti ti-list-check"></i> שלושת מרכיבי לימודי השדה</div>
+    <ul>
+      <li><strong>עבודה מעשית</strong> במסגרת ארגון ההכשרה שבו שובץ/ה הסטודנט/ית, הכוללת השתלבות בעשייה המקצועית ובפעילות השוטפת של הארגון.</li>
+      <li><strong>הדרכה אישית</strong> הניתנת על ידי מדריך/ה מקצועי/ת, במוסד ההכשרה או באוניברסיטה.</li>
+      <li><strong>סדנת למידה קבוצתית</strong> המתקיימת אחת לשבועיים או אחת לחודש במסגרת מרכז הלמידה, בהנחיית רכז/ת המרכז — מרחב ללמידה משותפת, עיבוד חוויות מהשדה, העמקה בסוגיות מקצועיות וחיבור בין התיאוריה לפרקטיקה.</li>
+    </ul>
+    <p>שילוב שלושת הרכיבים מאפשר לסטודנטים לרכוש ניסיון מעשי משמעותי, לפתח מיומנויות מקצועיות ולבסס את זהותם המקצועית לקראת השתלבותם כעובדים סוציאליים בשדה.</p>
+    <div class="note-box">
+      <i class="ti ti-info-circle"></i>
+      <span>מרכזי הלמידה מתמקדים בתחומי העשייה השונים ומציעים דגשי תוכן ייחודיים. פועלים מרכזים פרטניים, קהילתי, ומרכזים משולבים שבהם לומדים יחד סטודנטים משתי המגמות.</span>
+    </div>`
+  },
+  partani: {
+    description: `<h4>המגמה הפרטנית</h4>
+    <p>רכישת ידע עיוני והכשרה מקצועית בעבודה עם יחידים, משפחות וקבוצות.</p>
+    <p style="font-size: 13px; color: #8a7a85;">בחרו מרכז למידה לקבלת מידע מורחב:</p>`,
+    centers: [
+      { id: "mental_health", name: "בריאות הנפש" },
+      { id: "families", name: "משפחות בסיכון" },
+      { id: "elderly", name: "אתגרי הטיפול בגיל הזקנה" },
+      { id: "teens", name: "טיפול במתבגרים" },
+      { id: "haruv", name: "קמפוס חרוב — ילדים נפגעי התעללות" },
+      { id: "trauma", name: "טראומה, חוסן והתמודדות" },
+      { id: "employment", name: "תחום התעסוקה בעבודה סוציאלית" },
+      { id: "rehab", name: "שיקום ובריאות בקהילה" },
+      { id: "hadassah", name: "בית החולים האוניברסיטאי הדסה" },
+      { id: "shaarey", name: "בית החולים שערי צדק" },
+      { id: "maaleh_adumim", name: "אגף הרווחה מעלה אדומים" },
+      { id: "merkaz_haaretz", name: "רב-תחומי במרכז הארץ" },
+      { id: "tikun", name: "רב-תחומי תקו\"ן והתמכרויות" },
+      { id: "east_jer", name: "רב-תרבותי במזרח ירושלים" }
+    ]
+  },
+  kehilatit: {
+    description: `<h4>המגמה הקהילתית</h4>
+    <p>לימודי התמחות בעבודה עם קבוצות וארגונים והכשרה לתפקידים בשירותים חברתיים ובמינהל.</p>
+    <p style="font-size: 13px; color: #8a7a85;">להצגת המידע המלא:</p>`,
+    centers: [
+      { id: "community", name: "מרכז הלמידה הקהילתי" }
+    ]
+  },
+  centersInfo: {
+    mental_health: {
+      name: "מרכז למידה לבריאות הנפש",
+      icon: "mental_health",
+      link: "https://sw.huji.ac.il/book/%D7%9E%D7%A8%D7%9B%D7%96-%D7%9C%D7%9E%D7%99%D7%93%D7%94-%D7%9C%D7%98%D7%99%D7%A4%D7%95%D7%9C-%D7%91%D7%9E%D7%AA%D7%91%D7%92%D7%A8%D7%99%D7%9D-0",
+      desc: "המרכז מעניק היכרות מעמיקה עם עולם בריאות הנפש, הטיפול והשיקום. ההכשרה מתקיימת במגוון מסגרות — בתי חולים פסיכיאטריים, מרפאות ותחנות לבריאות הנפש, מסגרות שיקום בקהילה וארגונים ייחודיים בתחום. הסטודנטים מתנסים בעבודה טיפולית פרטנית, בתיאום טיפול, בעבודה מערכתית ולעיתים גם בהנחיית קבוצות, ופוגשים אנשים המתמודדים עם מגוון אתגרים נפשיים בשלבי התמודדות שונים.",
+      places: [
+        { icon: "ti-building-hospital", name: "מרפאות ומרכזים לבריאות הנפש בקהילה — טיפול פרטני וליווי שיקום בצוות רב־מקצועי" },
+        { icon: "ti-users-group", name: "מרכזי תמיכה וייעוץ לבני משפחה של מתמודדים — הבנת השפעת ההתמודדות על המערכת המשפחתית" },
+        { icon: "ti-home-heart", name: "מסגרות דיור ושיקום בקהילה — תיאום טיפול, מיצוי זכויות, סנגור ושילוב בתעסוקה, השכלה ופנאי" }
+      ],
+      coordinator: "גברת נעמה אשל",
+      phone: "054-7804903",
+      email: "naama.levy@mail.huji.ac.il"
+    },
+    families: {
+      name: "מרכז למידה למשפחות בסיכון",
+      icon: "families",
+      link: "https://sw.huji.ac.il/book/%D7%9E%D7%A8%D7%9B%D7%96-%D7%9C%D7%9E%D7%99%D7%93%D7%94-%D7%9C%D7%9E%D7%A9%D7%A4%D7%97%D7%95%D7%AA-%D7%91%D7%A1%D7%99%D7%9B%D7%95%D7%9F",
+      desc: "המרכז מתמקד בעבודה עם ילדים, הורים ומשפחות המתמודדים עם אתגרים ומשברי חיים שונים. ההכשרה עוסקת במגוון סוגיות לאורך מעגל החיים המשפחתי — הורות, זוגיות, גירושין ופרידה, אלימות במשפחה וילדים ובני נוער במצבי סיכון. הסטודנטים רוכשים ניסיון בהתערבויות פסיכו־סוציאליות, ניהול קשר טיפולי, מיצוי זכויות, סנגור ועבודה מערכתית בצוותים רב־מקצועיים.",
+      places: [
+        { icon: "ti-building-community", name: "לשכות לשירותים חברתיים — עבודה ברמות הפרט, המשפחה והקהילה (מיקרו ומקרו)" },
+        { icon: "ti-school", name: "מסגרות חינוכיות — עבודה טיפולית עם ילדים ומתבגרים, הדרכת הורים והנחיית קבוצות" },
+        { icon: "ti-shield-heart", name: "מסגרות טיפול ומניעה באלימות במשפחה — ליווי רגשי והתערבות במצבי משבר" },
+        { icon: "ti-home", name: "מסגרות חוץ־ביתיות ונוער בסיכון — ליווי אישי, תהליכי שיקום וחיזוק תפקודי" }
+      ],
+      coordinator: "גברת שרית חזן-אברמסון",
+      phone: "052-5238949",
+      email: "sarithazan8@gmail.com"
+    },
+    elderly: {
+      name: "מרכז למידה לאתגרי הטיפול בגיל הזקנה",
+      subtitle: "זקנה ומשפחה",
+      icon: "elderly",
+      link: "https://sw.huji.ac.il/book/%D7%9E%D7%A8%D7%9B%D7%96-%D7%9C%D7%9E%D7%99%D7%93%D7%94-%D7%90%D7%AA%D7%92%D7%A8%D7%99-%D7%94%D7%98%D7%99%D7%A4%D7%95%D7%9C-%D7%91%D7%92%D7%99%D7%9C-%D7%94%D7%96%D7%A7%D7%A0%D7%94",
+      desc: "המרכז עוסק בעבודה עם קשישים ובני משפחותיהם, תוך התייחסות לצרכי האדם הזקן ולמערכות התמיכה המשפחתיות. ההכשרה מתמקדת בליווי תהליכי הזדקנות וסוגיות מרכזיות: פרישה מעבודה, אובדנים ושינויים בתפקוד, ליווי משפחות המטפלות בהורה מזדקן והסתגלות לשילוב מטפל חיצוני. כמו כן ניתנת התייחסות ייחודית לליווי ניצולי שואה ולעבודה בצמתי בריאות, בריאות הנפש ורווחה.",
+      places: [
+        { icon: "ti-building", name: "דיור מוגן — עבודה טיפולית פרטנית והובלת פרויקטים קהילתיים בתוך מסגרת המגורים" },
+        { icon: "ti-stethoscope", name: "בריאות בקהילה ובבתי חולים — ליווי במצבים רפואיים מורכבים בצוותים רב־מקצועיים" },
+        { icon: "ti-building-community", name: "לשכות לשירותים חברתיים (תחום הזקנה) — ליווי אישי, מיצוי זכויות, עבודה עם משפחות והתערבות במשברים" }
+      ],
+      coordinator: "גברת פדות ביר",
+      phone: "052-6157689",
+      email: "pdutbi@gmail.com"
+    },
+    teens: {
+      name: "מרכז למידה לטיפול במתבגרים",
+      icon: "teens",
+      link: "https://sw.huji.ac.il/book/%D7%9E%D7%A8%D7%9B%D7%96-%D7%9C%D7%9E%D7%99%D7%93%D7%94-%D7%9C%D7%98%D7%99%D7%A4%D7%95%D7%9C-%D7%91%D7%9E%D7%AA%D7%91%D7%92%D7%A8%D7%99%D7%9D",
+      desc: "המרכז מתמקד בעבודה פסיכו־סוציאלית מעמיקה עם בני נוער ומתבגרים על קשת רחבה של מצבי חיים. ההכשרה כוללת היכרות עם מתבגרים במסגרות חינוכיות וטיפוליות מגוונות: בתי ספר, פנימיות, מסגרות לנוער נושר ותכניות ייעודיות לנוער עם קשיים רגשיים והתנהגותיים. כמו כן עבודה עם מתבגרים מחוננים, נוער קצה במצבי סיכון, מסגרות חוץ־ביתיות ומרפאות לבריאות הנפש. הגישה הוליסטית — רואה את המתבגר בהקשר המשפחתי, החברתי והמערכתי.",
+      places: [
+        { icon: "ti-school", name: "תיכונים ופנימיות לנוער ומתבגרים — פגישות פרטניות וליווי במערך חינוכי־טיפולי" },
+        { icon: "ti-home-2", name: "מסגרות חוץ־ביתיות לנוער במצבי משבר — קורת גג והתערבות אינטנסיבית בשיקום" },
+        { icon: "ti-id", name: "מסגרות אמבולטוריות לצעירים — ליווי תהליכי שינוי זהות ומעבר בין עולמות חברתיים" }
+      ],
+      coordinator: "גברת בלה בן גרשון",
+      phone: "050-6242216",
+      email: "belka.bg@gmail.com"
+    },
+    haruv: {
+      name: "קמפוס חרוב לילדים",
+      subtitle: "ילדים נפגעי התעללות והזנחה",
+      icon: "haruv",
+      link: "https://sw.huji.ac.il/book/%D7%9E%D7%A8%D7%9B%D7%96-%D7%94%D7%9C%D7%9E%D7%99%D7%93%D7%94-%D7%91%D7%A7%D7%9E%D7%A4%D7%95%D7%91-%D7%97%D7%A8%D7%95%D7%91-%D7%9C%D7%99%D7%9C%D7%93%D7%99%D7%9D-%D7%A0%D7%A4%D7%92%D7%A2%D7%99-%D7%94%D7%AA%D7%A2%D7%9C%D7%9C%D7%95%D7%AA",
+      desc: "קמפוס ייחודי המאגד תחת קורת גג אחת מגוון שירותים לילדים נפגעי התעללות והזנחה. הקמפוס פועל במודל אינטגרטיבי המשלב טיפול, רפואה, מחקר ואקדמיה, ומקדם עבודה משותפת בין אנשי מקצוע מתחומים שונים העוסקים בילדים בסיכון. הפעילות מבוססת על שיתופי פעולה, למידה בין־תחומית (אינטרדיסציפלינרית) ופיתוח ידע מקצועי עדכני. הקמפוס משלב מסלולי התנסות פרטניים וקהילתיים.",
+      places: [
+        { icon: "ti-shield-heart", name: "מרכזי חירום לילדים בסיכון (עד גיל 14) — טיפול אינטנסיבי לילדים שחוו התעללות או הזנחה חמורה" },
+        { icon: "ti-heart-handshake", name: "מרכזי קשר הורה-ילד — בניית ושיקום קשר במצבי קונפליקט גבוה, פרידה או גירושין" },
+        { icon: "ti-school", name: "מסגרות קהילתיות למוגנות — תוכניות הסברה והדרכה במוגנות מינית וברשת" }
+      ],
+      coordinator: "גברת שוש תוג'מן",
+      phone: "050-2866640",
+      email: "shosh@haruv.org.il"
+    },
+    trauma: {
+      name: "מרכז למידה טראומה, חוסן והתמודדות",
+      icon: "trauma",
+      link: "https://sw.huji.ac.il/book/%D7%94%D7%9B%D7%A9%D7%A8%D7%94-%D7%9E%D7%A7%D7%A6%D7%95%D7%A2%D7%99%D7%AA-0",
+      desc: "המרכז מאפשר התנסות בהתערבויות מקצועיות בתחום הטראומה והחוסן, לצד חשיפה למגוון רחב של אוכלוסיות שהתמודדו עם אירועי טראומה ודחק. ההכשרה משולבת בארגונים ייעודיים ובמסגרות נוספות, וההתערבויות כוללות עבודה ברמה הפרטנית והקהילתית — מניעה, זיהוי והתערבות במצוקה. המרכז עוסק גם בהבנת הטראומטיזציה המשנית — השפעת החשיפה לטראומה על אנשי המקצוע עצמם — ומפתח מודעות וכלים לעבודה מיטיבה בסביבות טיפול מורכבות.",
+      places: [
+        { icon: "ti-first-aid-kit", name: "מרכזים לטיפול בטראומה (מבוגרים וילדים) — מניעה, התערבות במשבר ושיקום" },
+        { icon: "ti-heart-handshake", name: "עמותות לטיפול בנפגעי טראומה ומשברי חיים — מענה לחיילים, נפגעי חרדה וניצולי שואה" },
+        { icon: "ti-shield", name: "מרכזי חוסן קהילתיים — מענה לנפגעי דחק וחרדה על רקע ביטחוני" }
+      ],
+      coordinator: "פרטים יימסרו ע\"י המדור",
+      phone: "02-5882105",
+      email: "miribe@savion.huji.ac.il"
+    },
+    employment: {
+      name: "מרכז למידה: תחום התעסוקה בעבודה סוציאלית",
+      icon: "employment",
+      link: "https://sw.huji.ac.il/book/%D7%94%D7%9B%D7%A9%D7%A8%D7%94-%D7%9E%D7%A7%D7%A6%D7%95%D7%A2%D7%99%D7%AA-0",
+      desc: "המרכז מתמקד בקידום השתלבות בתעסוקה איכותית כמפתח מרכזי לרווחה אישית וחברתית. העבודה היא עם אנשים המתמודדים עם חסמים תעסוקתיים ונסיבות חיים מורכבות, שמקשות על השתלבות בשוק העבודה. הסטודנטים נחשפים לליווי פרטני מעמיק, עבודה מערכתית והתערבויות קהילתיות. הלמידה משלבת מפגשים קבוצתיים, חומרי קריאה והעמקה תיאורטית, תוך חיבור בין גישות פרטניות וקהילתיות.",
+      places: [
+        { icon: "ti-flower", name: "תכניות שיקום וליווי תעסוקתי לנשים בתהליכי מעבר — שילוב התערבות פרטנית ומערכתית" },
+        { icon: "ti-briefcase", name: "מרכזים לקידום תעסוקה לאוכלוסיות מעוטות הזדמנויות — ליווי וחיבור למשאבי קהילה" },
+        { icon: "ti-building-community", name: "תכניות תעסוקה בשירותים חברתיים עירוניים — ליווי פרטני וקבוצתי לחיזוק עצמאות כלכלית" }
+      ],
+      coordinator: "פרטים יימסרו ע\"י המדור",
+      phone: "02-5882105",
+      email: "miribe@savion.huji.ac.il"
+    },
+    rehab: {
+      name: "מרכז למידה: שיקום ובריאות בקהילה",
+      icon: "rehab",
+      link: "https://sw.huji.ac.il/book/%D7%9E%D7%A8%D7%9B%D7%96-%D7%9C%D7%9E%D7%99%D7%93%D7%94-%D7%94%D7%AA%D7%9E%D7%95%D7%93%D7%93%D7%95%D7%AA-%D7%A2%D7%9D-%D7%9E%D7%95%D7%92%D7%91%D7%9C%D7%95%D7%AA-%D7%95%D7%97%D7%95%D7%9C%D7%99",
+      desc: "המרכז מתמקד בעבודה עם משפחות ואנשים המתמודדים עם מצבי נכות, מחלה או צרכים מיוחדים, ומשולבים במסגרות שיקומיות, חינוכיות ובריאותיות שונות. אוכלוסיות היעד: משפחות לילדים בחינוך מיוחד, מטופלים במסגרות שיקום, אוכלוסיות במשרד הביטחון, שירותי בריאות ובתי כלא. ההכשרה משלבת טיפול פסיכו־סוציאלי ישיר, ביקורי בית, השתתפות בישיבות צוות ועבודה מערכתית.",
+      places: [
+        { icon: "ti-lock", name: "שירות בתי הסוהר (שב\"ס) — אבחון, טיפול פרטני וקבוצתי בליווי תהליכי שיקום של אסירים" },
+        { icon: "ti-stethoscope", name: "קופות חולים (כגון מכבי) — פסיכותרפיה, טיפול משפחתי ומיצוי זכויות בקהילה" },
+        { icon: "ti-eye", name: "מרכזי תמיכה ושיקום לאנשים עם לקות ראייה ועיוורון — ליווי הסתגלות ועיבוד אובדן" }
+      ],
+      coordinator: "פרטים יימסרו ע\"י המדור",
+      phone: "02-5882105",
+      email: "miribe@savion.huji.ac.il"
+    },
+    hadassah: {
+      name: "בית החולים האוניברסיטאי הדסה",
+      subtitle: "עבודה סוציאלית רפואית במודל ביו-פסיכו-סוציאלי",
+      icon: "hadassah",
+      link: "https://sw.huji.ac.il/book/%D7%9E%D7%A8%D7%9B%D7%96-%D7%9C%D7%9E%D7%99%D7%93%D7%94-%D7%91%D7%A8%D7%99%D7%90%D7%95%D7%AA-%D7%91%D7%AA%D7%99-%D7%94%D7%97%D7%95%D7%9C%D7%99%D7%9D-%D7%94%D7%90%D7%95%D7%A0%D7%99%D7%91%D7%A8%D7%A1%D7%99%D7%98%D7%90%D7%99%D7%99%D7%9D-%D7%A9%D7%9C-%D7%94%D7%93%D7%A1%D7%94",
+      desc: "העבודה הסוציאלית בהדסה מבוססת על המודל הביו־פסיכו־סוציאלי — חולי וטיפול רפואי כחוויה שמושפעת ממכלול גורמים רפואיים, רגשיים, משפחתיים, חברתיים ותרבותיים. ההתערבות מבוססת על הערכה רב־מערכתית ומתמקדת בחיזוק יכולות ההתמודדות של המטופל ובני משפחתו לאורך רצף הטיפול. הסטודנטים נחשפים להתערבות במשבר, ליווי במחלה כרונית או אובדן, בניית תכנית שחרור, וטיפול בסוגיות מורכבות כגון אלימות במשפחה, ילדים וקשישים בסיכון ואפוטרופסות.",
+      places: [
+        { icon: "ti-bed", name: "מחלקות אשפוז — פנימית, כירורגיה, אורטופדיה, אונקולוגיה, ילדים, נוירולוגיה, מיון ושיקום" },
+        { icon: "ti-stethoscope", name: "מרפאות ואשפוזי יום — דיאליזה, אונקולוגיה ורפואת ילדים בליווי מתמשך" },
+        { icon: "ti-brain", name: "מערך פסיכיאטרי בבית החולים — ילדים ומבוגרים בליווי שיקום והמשך טיפול בקהילה" },
+        { icon: "ti-heart", name: "המרכז לטיפול תומך (הוספיס) — ליווי במחלות מסכנות חיים ותמיכה רגשית" }
+      ],
+      coordinator: "פרטים יימסרו ע\"י המדור",
+      phone: "02-5882105",
+      email: "miribe@savion.huji.ac.il"
+    },
+    shaarey: {
+      name: "בית החולים שערי צדק",
+      subtitle: "עבודה סוציאלית רפואית בסביבה רב־תרבותית",
+      icon: "shaarey",
+      link: "https://sw.huji.ac.il/book/%D7%9E%D7%A8%D7%9B%D7%96-%D7%9C%D7%9E%D7%99%D7%93%D7%94-%D7%91%D7%A8%D7%99%D7%90%D7%95%D7%AA-%D7%91%D7%AA%D7%99-%D7%94%D7%97%D7%95%D7%9C%D7%99%D7%9D-%D7%94%D7%90%D7%95%D7%A0%D7%99%D7%91%D7%A8%D7%A1%D7%99%D7%98%D7%90%D7%99%D7%99%D7%9D-%D7%A9%D7%9C-%D7%94%D7%93%D7%A1%D7%94",
+      desc: "בית החולים הכללי, בהיותו מיקרוקוסמוס של החברה הישראלית, מהווה הזדמנות ייחודית ללמידה על גיוון תרבותי, אתגרים חברתיים ומפגש עם מטופלים ובני משפחותיהם ברגעי חיים משמעותיים. ההכשרה כוללת הערכה פסיכו־סוציאלית, התערבות במשבר, מיצוי זכויות וליווי במצבים רפואיים מורכבים. כל סטודנט/ית מוקצה למחלקת אם ייעודית (כגון נשים, דיאליזה או אונקולוגיה), לצד חשיפה רחבה לכלל מחלקות בית החולים, ועבודה רב־מערכתית הכוללת הנחיית קבוצות וועדות מקצועיות.",
+      places: [
+        { icon: "ti-bed", name: "מחלקת אם ייעודית לכל סטודנט — בסיס מרכזי להתנסות הקלינית והלמידה" },
+        { icon: "ti-users", name: "הנחיית קבוצות והשתתפות בוועדות מקצועיות — פיתוח ראייה רחבה של תפקיד העו\"ס" },
+        { icon: "ti-alert-triangle", name: "מענה למצבי חירום וטראומה — שילוב בצוותים רב־מקצועיים בכלל המחלקות" }
+      ],
+      coordinator: "פרטים יימסרו ע\"י המדור",
+      phone: "02-5882105",
+      email: "miribe@savion.huji.ac.il"
+    },
+    maaleh_adumim: {
+      name: "אגף הרווחה מעלה אדומים",
+      subtitle: "אגף רווחה עירוני — מענה לכל מעגל החיים",
+      icon: "maaleh_adumim",
+      link: "https://sw.huji.ac.il/book/%D7%94%D7%9B%D7%A9%D7%A8%D7%94-%D7%9E%D7%A7%D7%A6%D7%95%D7%A2%D7%99%D7%AA-0",
+      desc: "המרכז מאפשר הכשרה במסגרת אגף רווחה עירוני המספק מענה רחב ומקיף לתושבי העיר לאורך כל מעגל החיים — מלידה ועד זקנה. האגף מאופיין בעשייה מגוונת, שיתופי פעולה בין שירותים, ומעטפת רחבה למקבלי השירות. הסטודנטים נחשפים לעבודה ברמות הפרט, המשפחה והקהילה, ולעבודה כסוכן שינוי חברתי. תחומי העשייה: ילדים ובני נוער, הורים ומשפחות, צעירים, אזרחים ותיקים, התמכרויות, אלימות במשפחה ועבודה בחסות החוק. אווירה מקצועית ומשפחתית.",
+      places: [
+        { icon: "ti-mood-kid", name: "מסגרות נוער בסיכון — עבודה קבוצתית ופרטנית בשעות אחה\"צ" },
+        { icon: "ti-baby-carriage", name: "מרכזים להורים וילדים — הדרכת הורים והתערבויות טיפוליות בילדים" },
+        { icon: "ti-pill", name: "מרכזים לטיפול בהתמכרויות — עבודה פרטנית, משפחתית וקבוצתית בליווי שינוי ושיקום" }
+      ],
+      coordinator: "פרטים יימסרו ע\"י המדור",
+      phone: "02-5882105",
+      email: "miribe@savion.huji.ac.il"
+    },
+    merkaz_haaretz: {
+      name: "מרכז למידה רב-תחומי במרכז הארץ",
+      subtitle: "הכשרה מחוץ לירושלים לסטודנטים מאזור המרכז",
+      icon: "merkaz_haaretz",
+      link: "https://sw.huji.ac.il/book/%D7%94%D7%9B%D7%A9%D7%A8%D7%94-%D7%9E%D7%A7%D7%A6%D7%95%D7%A2%D7%99%D7%AA-0",
+      desc: "המרכז מאגד מקומות הכשרה הממוקמים מחוץ לירושלים, בעיקר באזור המרכז. הוא נועד לסטודנטים המתגוררים באזורים מרוחקים — כדי לאפשר השתלבות בהכשרה מקצועית איכותית הקרובה יותר לאזור מגוריהם ולצמצם את הצורך בהגעה יומיומית לירושלים. מספר המקומות מצומצם ומוגבל. תחומי ההכשרה: בריאות הנפש של מבוגרים וילדים, טיפול דיאדי אם-ילד בגיל הרך, משפחות אומנה ועבודה סוציאלית קלינית ומשפחתית.",
+      places: [
+        { icon: "ti-mood-kid", name: "מרפאות ותחנות לבריאות הנפש לילדים ולנוער — עבודה בצוותים רב־מקצועיים" },
+        { icon: "ti-baby-carriage", name: "מרכזים לטיפול דיאדי בגיל הרך — חיזוק קשר הורה-ילד וויסות רגשי" },
+        { icon: "ti-home-2", name: "מסגרות חוץ־ביתיות לילדים ונוער בסיכון — ליווי אישי, רגשי וחינוכי" }
+      ],
+      note: "מספר המקומות במרכז זה מצומצם ומוגבל, ומוקצה בהתאם לתחומי ההתמחות והזמינות.",
+      coordinator: "פרטים יימסרו ע\"י המדור",
+      phone: "02-5882105",
+      email: "miribe@savion.huji.ac.il"
+    },
+    tikun: {
+      name: "מרכז למידה רב-תחומי תקו\"ן והתמכרויות",
+      subtitle: "עבודה עם אוכלוסיות במצבי סיכון מורכבים",
+      icon: "tikun",
+      link: "https://sw.huji.ac.il/sites/default/files/s-w/files/rb_tkhvmy_tshpb.pdf",
+      desc: "המרכז מתמקד בעבודה עם אוכלוסיות במצבי סיכון מורכבים, שחלקן נמצאות במפגש ישיר או עקיף עם מערכת החוק. כולל ארגונים וסוכנויות הפועלים עם מכורים, נשים חסרות בית, אסירים בתהליכי שיקום, מבקשי מקלט ובני נוער במצבי סיכון. ההתערבות משלבת שיקום, מיצוי זכויות, טיפול קצר וארוך טווח, ועבודת \"reaching out\" לאוכלוסיות שאינן במענה טיפולי רציף. העבודה מורכבת רגשית ומציעה מרחב משמעותי ללמידה מקצועית והתפתחות אישית.",
+      places: [
+        { icon: "ti-building-bridge", name: "שירותי טיפול במכורים ואסירים משוחררים — אבחון, טיפול וליווי ארוך טווח" },
+        { icon: "ti-mood-kid", name: "יחידות לקידום נוער וצעירים בסיכון — איתור, מניעה והתערבות פרטנית, קבוצתית וקהילתית" },
+        { icon: "ti-gavel", name: "שירות מבחן לנוער — הערכה פסיכו־סוציאלית, חוות דעת ועבודה מול בית המשפט" }
+      ],
+      coordinator: "מר עצי קרצ'מר",
+      phone: "054-9299616",
+      email: "amietty@walla.com"
+    },
+    east_jer: {
+      name: "מרכז למידה רב-תרבותי במזרח ירושלים",
+      subtitle: "לסטודנטים דוברי ערבית",
+      icon: "east_jer",
+      link: "https://sw.huji.ac.il/book/%D7%94%D7%9B%D7%A9%D7%A8%D7%94-%D7%9E%D7%A7%D7%A6%D7%95%D7%A2%D7%99%D7%AA-0",
+      desc: "המרכז מיועד לסטודנטים דוברי ערבית ומציע הכשרה מקצועית מגוונת במרחב רב־תרבותי ייחודי. מאפשר התנסות רחבה בהתערבויות טיפוליות ומניעתיות במגוון תחומים — עבודה עם משפחות, ילדים, מתבגרים, נוער, שיקום ואלימות במשפחה. המרכז מאגד סוכנויות וארגונים המספקים שירותים לאוכלוסיית מזרח ירושלים. הדגש: עבודה פרטנית וקהילתית בצוותים רב־מקצועיים, התאמת ההתערבות להקשר התרבותי והחברתי הייחודי של האוכלוסייה המקומית.",
+      places: [
+        { icon: "ti-baby-carriage", name: "מרכז ילדים, הורים ונתיבים להורות — טיפול במשפחות עם ילדים בגילאי 0-12" },
+        { icon: "ti-building-community", name: "מחלקות לשירותים חברתיים (לשכות רווחה) — התנסות בעבודה פרטנית, משפחתית, קבוצתית וקהילתית" }
+      ],
+      coordinator: "פרטים יימסרו ע\"י המדור",
+      phone: "02-5882105",
+      email: "miribe@savion.huji.ac.il"
+    },
+    community: {
+      name: "מרכז הלמידה הקהילתי",
+      subtitle: "עבודה סוציאלית קהילתית — מיקרו ומאקרו",
+      icon: "community",
+      link: "https://sw.huji.ac.il/book/%D7%94%D7%9B%D7%A9%D7%A8%D7%94-%D7%9E%D7%A7%D7%A6%D7%95%D7%A2%D7%99%D7%AA-0",
+      desc: "במסגרת המרכז הסטודנטים נחשפים ליסודות העבודה הסוציאלית הקהילתית ולומדים להוביל תהליכי שינוי חברתי בשיתוף עם קהילות בעלות אינטרס משותף. ההכשרה מדגישה עבודה ברמות שונות — מיקרו ומאקרו — בהקשרים שכונתיים, עירוניים ואף ארציים, ומאפשרת הבנה רחבה של תהליכים חברתיים ומערכתיים. נרכשים כלים לאבחון מצבים חברתיים, תכנון והובלת פרויקטים קהילתיים, גיוס כוחות ומשאבים, ושילוב אסטרטגיות פעולה כסוכני שינוי חברתי.",
+      yearB: {
+        title: "שנה ב' — מיומנויות יסוד ברמה השכונתית",
+        text: "התנסות במחלקות לשירותים חברתיים ובמינהלים קהילתיים בירושלים. הסטודנטים מפתחים מיומנויות בסיסיות: מיפוי צרכים, גיוס פעילים והקמת קבוצות משימה לפיתוח מענים שכונתיים.",
+        examples: "מחלקות לשירותים חברתיים בקריית יובל ובית הכרם, המחלקה לטיפול באנשים עם מוגבלות ובני משפחותיהם, מינהלים קהילתיים בגבעה הצרפתית ובוואדי ג'וז."
+      },
+      yearC: {
+        title: "שנה ג' — שינוי מדיניות ופעילות במרחב הציבורי",
+        text: "השתלבות בארגוני סיוע, עמותות ומשרדי ממשלה. ההתנסות מתמקדת בקידום שינויי מדיניות והובלת תהליכים לשיפור מענים ברמה העירונית והארצית, תוך חיבור בין עבודה מקצועית בשטח להשפעה מערכתית רחבה."
+      },
+      places: [
+        { icon: "ti-building-bank", name: "השירות לעבודה קהילתית במשרד הרווחה — קידום יוזמות, פיתוח שותפויות וחיזוק מענים" },
+        { icon: "ti-users", name: "ארגוני עובדים וחברה אזרחית — \"כוח לעובדים\" ואיגוד העובדות והעובדים הסוציאליים" },
+        { icon: "ti-home-2", name: "היחידה לטיפול בדרי רחוב והיחידה לטיפול באסירים משוחררים והתמכרויות" },
+        { icon: "ti-world", name: "ארגוני חברה אזרחית ובינלאומיים — ג'וינט ישראל, \"ג'ק\" למבקשי מקלט" },
+        { icon: "ti-bulb", name: "יוזמות חברתיות — \"מצילות המזון\" למניעת בזבוז וסיוע לאוכלוסיות במצוקה" }
+      ],
+      coordinator: "רכז/ת המרכז הקהילתי",
+      phone: "02-5882105",
+      email: "miribe@savion.huji.ac.il"
+    }
+  }
+};
+
+// ===================== Smart Search Engine =====================
+// Keyword dictionary - maps Hebrew terms to centers/topics
+const knowledgeMap = [
+  // ===== מידע כללי =====
+  { topic: "general", type: "info", label: "מידע על ההכשרה המקצועית",
+    keywords: ["מה זה ההכשרה", "איך עובדת ההכשרה", "פרטים על ההכשרה", "סקירה כללית", "מבוא", "היקף ההכשרה", "כמה שעות", "כמה ימים", "נקודות זכות", "נז", "סדנה", "מבנה ההכשרה", "תוכנית הבוגר", "השלמות", "מרכיבי ההכשרה", "הדרכה אישית", "מדריך", "מדריכה", "רוצה לדעת על ההכשרה", "מידע על ההכשרה", "איך ההכשרה", "מה כוללת ההכשרה", "שנה ב", "שנה ג", "שנות ההכשרה", "כמה שנות הכשרה", "מה הנושא", "על מה ההכשרה"] },
+
+  // ===== יצירת קשר =====
+  { topic: "contact", type: "info", label: "יצירת קשר עם המדור",
+    keywords: ["יצירת קשר", "ליצור קשר", "טלפון", "מייל", "אימייל", "כתובת", "מי הצוות", "ראש המדור", "רכזת", "איריס", "מירי", "פקס", "שעות קבלה", "איפה המשרד", "חדר", "הר הצופים", "לדבר עם מישהו", "פרטי קשר", "לפנות למדור", "מדור הכשרה", "איך פונים", "צוות המדור", "צדוק", "בן הרוש", "זדוק", "מס טלפון", "מספר טלפון"] },
+
+  // ===== בריאות הנפש =====
+  { topic: "mental_health", type: "center", track: "partani", label: "מרכז למידה לבריאות הנפש",
+    keywords: ["בריאות הנפש", "בריאות נפש", "פסיכי", "פסיכיאטרי", "פסיכיאטריה", "דיכאון", "חרדה", "סכיזופרניה", "הפרעה דו-קוטבית", "מאניה", "מתמודדים", "שיקום נפשי", "מרפאה לבריאות הנפש", "איתנים", "כפר שאול", "פסיכוסוציאלי", "מצוקה נפשית", "מחלת נפש", "התמודדות נפשית", "מתמודד נפשי", "נפשי", "נפש", "מוח", "פסיכולוג", "אשפוז פסיכיאטרי", "רוצה לעבוד עם מתמודדים", "עניין בבריאות הנפש"] },
+
+  // ===== משפחות בסיכון =====
+  { topic: "families", type: "center", track: "partani", label: "מרכז למידה למשפחות בסיכון",
+    keywords: ["משפחה", "משפחות", "הורות", "הורים", "הורה", "גירושין", "פרידה", "אלימות במשפחה", "אלימות", "זוגיות", "ילדים בסיכון", "סיכון", "רווחה משפחתית", "לשכת רווחה", "מחלקה לשירותים חברתיים", "אומנה", "חוץ-ביתי", "פנימייה", "משפחתי", "הורי", "ילדים", "ילד", "ילדה", "זוג", "טיפול במשפחות", "טיפול בהורים", "אלימות ביתית", "שירותים חברתיים"] },
+
+  // ===== גיל הזקנה =====
+  { topic: "elderly", type: "center", track: "partani", label: "מרכז למידה לאתגרי הטיפול בגיל הזקנה",
+    keywords: ["זקנה", "זקנים", "קשישים", "קשיש", "גיל זהב", "הזדקנות", "סיעוד", "אזרחים ותיקים", "ניצולי שואה", "פרישה", "בית אבות", "דיור מוגן", "גריאטריה", "מבוגרים", "אזרח ותיק", "קשישות", "גיל שלישי", "שואה", "ניצול שואה", "זיקנה", "אנשים מבוגרים", "טיפול בקשישים", "רוצה לעבוד עם קשישים", "עניין בגיל הזקנה"] },
+
+  // ===== מתבגרים =====
+  { topic: "teens", type: "center", track: "partani", label: "מרכז למידה לטיפול במתבגרים",
+    keywords: ["מתבגרים", "מתבגר", "נוער", "נער", "נערה", "נערים", "נערות", "טינייג'ר", "טינייג'רים", "גיל ההתבגרות", "בני נוער", "תיכון", "תיכוניסט", "פנימיית נוער", "נושר", "מחוננים", "התבגרות", "גיל נוער", "עשרה", "עשרות", "רוצה לעבוד עם נוער", "עניין בנוער", "עבודה עם נוער", "צעירים", "ילדים ונוער"] },
+
+  // ===== חרוב =====
+  { topic: "haruv", type: "center", track: "partani", label: "קמפוס חרוב — ילדים נפגעי התעללות",
+    keywords: ["חרוב", "התעללות", "התעללות בילדים", "ילדים נפגעי", "ילדים בסיכון", "פגיעה בילדים", "הזנחה", "מוגנות", "תקיפה מינית", "חקירת ילדים", "המועצה לשלום הילד", "ילדים נפגעים", "פגיעה מינית", "ילדים מוכים", "הגנת ילדים", "פגיעות", "נפגעי התעללות", "מוגנות ילדים", "קמפוס חרוב", "הכשרה בחרוב"] },
+
+  // ===== טראומה =====
+  { topic: "trauma", type: "center", track: "partani", label: "מרכז למידה לטראומה, חוסן והתמודדות",
+    keywords: ["טראומה", "טראומטי", "פוסט-טראומה", "פוסט טראומה", "ptsd", "פטסד", "חוסן", "משבר", "חירום", "מלחמה", "מלחמתי", "ביטחוני", "טרור", "נפגעי טרור", "נטל", "פסיכוטראומה", "טרואמטיזציה משנית", "חרדת קרב", "נפגעי מלחמה", "שרידים", "שחיקה", "עזרה ראשונה נפשית", "אסון", "אסונות", "התאוששות"] },
+
+  // ===== תעסוקה =====
+  { topic: "employment", type: "center", track: "partani", label: "מרכז למידה: תחום התעסוקה",
+    keywords: ["תעסוקה", "עבודה", "עוס תעסוקה", "מקצוע", "פרנסה", "מובטלים", "שיקום תעסוקתי", "השמה", "חיפוש עבודה", "חסמי תעסוקה", "השתלבות בעבודה", "מעוטות הזדמנויות", "שוק עבודה", "עבודה סוציאלית", "תעסוק", "השמה לעבודה", "אבטלה", "מובטל", "שכר", "קריירה", "עולם העבודה"] },
+
+  // ===== שיקום =====
+  { topic: "rehab", type: "center", track: "partani", label: "מרכז למידה: שיקום ובריאות בקהילה",
+    keywords: ["שיקום", "מוגבלות", "נכות", "נכים", "אנשים עם מוגבלות", "לקות ראייה", "עיוורון", "חינוך מיוחד", "צרכים מיוחדים", "מכבי", "קופת חולים", "שב\"ס", "שבס", "בית כלא", "בית סוהר", "אסירים", "אקים", "בזכות", "יד שרה", "שיקום קהילתי", "בריאות בקהילה", "נכה", "מוגבל", "לקות שמיעה", "אוטיזם", "שיקום רפואי"] },
+
+  // ===== הדסה =====
+  { topic: "hadassah", type: "center", track: "partani", label: "בית החולים האוניברסיטאי הדסה",
+    keywords: ["הדסה", "בית חולים הדסה", "הדסה עין כרם", "הדסה הר הצופים", "אונקולוגיה", "אונקולוגי", "המטולוגיה", "כירורגיה", "אורטופדיה", "נוירולוגיה", "אשפוז", "מחלקת ילדים", "טיפול נמרץ", "הוספיס", "מחלה כרונית", "טיפול תומך"] },
+
+  // ===== שערי צדק =====
+  { topic: "shaarey", type: "center", track: "partani", label: "בית החולים שערי צדק",
+    keywords: ["שערי צדק", "שערי-צדק", "ש\"צ", "בית חולים שערי צדק", "שערי צדק ירושלים", "מחלקת נשים", "דיאליזה", "מחלקת אם"] },
+
+  // ===== מעלה אדומים =====
+  { topic: "maaleh_adumim", type: "center", track: "partani", label: "אגף הרווחה מעלה אדומים",
+    keywords: ["מעלה אדומים", "מעלה-אדומים", "אגף רווחה עירוני", "רווחה עירונית", "מערך עירוני"] },
+
+  // ===== מרכז הארץ =====
+  { topic: "merkaz_haaretz", type: "center", track: "partani", label: "רב-תחומי במרכז הארץ",
+    keywords: ["מרכז הארץ", "גוש דן", "תל אביב", "ראשון לציון", "רחובות", "אזור המרכז", "רחוק מירושלים", "מחוץ לירושלים", "השרון", "פתח תקווה", "טיפול דיאדי", "אם-ילד", "גיל הרך", "משפחות אומנה", "מרכז הארץ רב-תחומי", "לא ירושלים", "חוץ לירושלים", "רב-תחומי"] },
+
+  // ===== תקו"ן =====
+  { topic: "tikun", type: "center", track: "partani", label: "רב-תחומי תקו\"ן והתמכרויות",
+    keywords: ["תקון", "תקו\"ן", "התמכרויות", "התמכרות", "מכורים", "מכור", "סמים", "אלכוהול", "אסירים", "אסיר משוחרר", "פליטים", "מבקשי מקלט", "דרי רחוב", "חסרי בית", "נשים חסרות בית", "שלמ", "ש\"לם", "reaching out", "פראו כץ"] },
+
+  // ===== מזרח ירושלים =====
+  { topic: "east_jer", type: "center", track: "partani", label: "רב-תרבותי במזרח ירושלים",
+    keywords: ["מזרח ירושלים", "מזרח-ירושלים", "ערבית", "ערבי", "ערבים", "דובר ערבית", "דוברי ערבית", "רב-תרבותי", "רב תרבותי", "רב-תרבותית", "מולטי קולטורלי", "תרבותי"] },
+
+  // ===== קהילתי =====
+  { topic: "community", type: "center", track: "kehilatit", label: "מרכז הלמידה הקהילתי",
+    keywords: ["קהילתי", "קהילה", "קהילתית", "שכונה", "שכונתי", "מדיניות", "שינוי חברתי", "אקטיביזם", "פעילים", "ארגון קהילתי", "מיפוי צרכים", "פיתוח קהילה", "סנגור", "סנגור קבוצתי", "כוח לעובדים", "איגוד עו\"ס", "ג'וינט", "ג'ק", "מצילות המזון", "דרי רחוב", "מינהל קהילתי", "קריית יובל", "בית הכרם", "גבעה הצרפתית", "ואדי ג'וז"] },
+
+  // ===== מסלולים כלליים =====
+  { topic: "partani", type: "track", label: "המגמה הפרטנית",
+    keywords: ["פרטני", "פרטנית", "מגמה פרטנית", "טיפול פרטני", "טיפול אישי", "טיפול פסיכותרפויטי", "פסיכותרפיה", "ייעוץ פרטני"] },
+  { topic: "kehilatit", type: "track", label: "המגמה הקהילתית",
+    keywords: ["קהילתית", "מגמה קהילתית", "מגמה קהילה"] }
+];
+
+// Normalize Hebrew text: remove niqqud, lowercase, normalize quotes
+function normalize(text) {
+  return text
+    .toLowerCase()
+    .replace(/[\u0591-\u05C7]/g, '') // remove niqqud
+    .replace(/["'\u05f4\u05f3]/g, '"')
+    .replace(/[\u05be\u2013\u2014]/g, '-')
+    .replace(/\s+/g, ' ')
+    .trim();
+}
+
+// Strip common Hebrew prefixes (ב ל מ ה ו כ ש) and suffixes (ים ות ית) to get word stem
+function hebrewStem(word) {
+  if (!word || word.length < 3) return word;
+  var w = word;
+  if (w.length > 3 && 'בלמהוכש'.indexOf(w[0]) !== -1) w = w.slice(1);
+  if (w.length > 4 && w.endsWith('ים')) return w.slice(0, -2);
+  if (w.length > 4 && w.endsWith('ות')) return w.slice(0, -2);
+  if (w.length > 4 && w.endsWith('ית')) return w.slice(0, -2);
+  return w;
+}
+
+// Detect greetings / very vague single-word queries
+function isVagueQuery(query) {
+  var vague = ['שלום', 'היי', 'הי', 'בוקר טוב', 'ערב טוב'];
+  var n = normalize(query);
+  return vague.some(function(v) { return n === normalize(v); }) && query.trim().length < 20;
+}
+
+// Score how well a query matches a topic
+function scoreMatch(query, keywords) {
+  var nQuery = normalize(query);
+  var queryWords = nQuery.split(/\s+/).filter(function(w) { return w.length > 1; });
+  var queryStems = queryWords.map(hebrewStem);
+
+  var score = 0;
+  var matches = [];
+
+  for (var i = 0; i < keywords.length; i++) {
+    var kw = keywords[i];
+    var nKw = normalize(kw);
+    if (nKw.length < 2) continue;
+
+    // 1. Exact phrase match — highest weight
+    if (nQuery.includes(nKw)) {
+      var weight = Math.max(1, nKw.split(' ').length * 2) + (nKw.length / 5);
+      score += weight;
+      matches.push(kw);
+      continue;
+    }
+
+    // 2. Stem-level word matching — catches prefix/suffix morphological variations
+    var kwWords = nKw.split(/\s+/).filter(function(w) { return w.length > 1; });
+    var kwStems = kwWords.map(hebrewStem);
+    var stemHits = 0;
+
+    for (var qi = 0; qi < queryStems.length; qi++) {
+      var qs = queryStems[qi];
+      if (qs.length < 3) continue;
+      for (var ki = 0; ki < kwStems.length; ki++) {
+        var ks = kwStems[ki];
+        if (ks.length < 3) continue;
+        if (qs === ks) { stemHits += 1.2; break; }
+        if (qs.length >= 4 && ks.length >= 4 && (qs.includes(ks) || ks.includes(qs))) {
+          stemHits += 0.7; break;
+        }
+      }
+    }
+
+    if (stemHits > 0) {
+      score += stemHits * (kwWords.length > 1 ? 1.3 : 1);
+      matches.push(kw);
+    }
+  }
+
+  return { score: score, matches: matches };
+}
+
+// Find best matching topics
+function searchKnowledge(query) {
+  if (!query || !query.trim()) return [];
+  var results = knowledgeMap.map(function(item) {
+    var res = scoreMatch(query, item.keywords);
+    return Object.assign({}, item, { score: res.score, matches: res.matches });
+  }).filter(function(r) { return r.score > 0; })
+    .sort(function(a, b) { return b.score - a.score; });
+  return results;
+}
+
+// Handle a free-text search query
+function handleSearch(query) {
+  if (!query || !query.trim()) return;
+  userMessage(query);
+
+  // Greeting
+  if (isVagueQuery(query)) {
+    botMessage(
+      `<h4>שלום! 👋</h4>
+       <p>אני <strong>מאיה</strong>, הבוט של המדור להכשרה מקצועית. אשמח לעזור!</p>
+       <p>תוכלו לשאול כל שאלה על ההכשרה — לדוגמה: <em>"אני רוצה לעבוד עם מתבגרים"</em> או <em>"מה זה מגמה פרטנית?"</em></p>`,
+      [
+        { label: "מידע על ההכשרה המקצועית", value: "general" },
+        { label: "המגמה הפרטנית", value: "partani" },
+        { label: "המגמה הקהילתית", value: "kehilatit" },
+        { label: "יצירת קשר עם המדור", value: "contact" }
+      ]
+    );
+    return;
+  }
+
+  var results = searchKnowledge(query);
+
+  // No matches
+  if (results.length === 0) {
+    botMessage(
+      `<h4>לא זיהיתי את הנושא 🤔</h4>
+       <p>נסו לנסח בצורה אחרת, לדוגמה: <em>"עבודה עם קשישים"</em>, <em>"בריאות הנפש"</em>, <em>"מרכז הדסה"</em>.</p>
+       <p>או בחרו ישירות מהתפריט:</p>`,
+      [
+        { label: "מידע על ההכשרה המקצועית", value: "general" },
+        { label: "המגמה הפרטנית", value: "partani" },
+        { label: "המגמה הקהילתית", value: "kehilatit" },
+        { label: "יצירת קשר עם המדור", value: "contact" }
+      ]
+    );
+    return;
+  }
+
+  var topResult = results[0];
+  var secondScore = results[1] ? results[1].score : 0;
+
+  // Single dominant match — navigate directly
+  if (results.length === 1 || topResult.score > secondScore * 1.8) {
+    botMessage(
+      `<div class="search-result-hint">
+         <i class="ti ti-sparkles"></i>
+         <span>הבנתי שאתם מחפשים מידע על <strong>${topResult.label}</strong>. הנה המידע:</span>
+       </div>`,
+      null,
+      400
+    );
+    setTimeout(function() { routeToTopic(topResult); }, 1400);
+    return;
+  }
+
+  // Multiple matches — let user pick
+  var options = results.slice(0, 4).map(function(r) {
+    return { label: r.label, value: 'search:' + r.topic + ':' + r.type + ':' + (r.track || '') };
+  });
+  options.push({ label: "חזרה לתפריט הראשי", value: "main", back: true });
+
+  botMessage(
+    `<h4>מצאתי כמה נושאים רלוונטיים ✨</h4>
+     <p>לאיזה מהם התכוונתם?</p>`,
+    options
+  );
+}
+
+function routeToTopic(result) {
+  if (result.type === "info") {
+    if (result.topic === "general") {
+      botMessage(data.general.content, [
+        { label: "למידע נוסף באתר ביה\"ס", url: data.general.link },
+        { label: "חזרה לתפריט הראשי", value: "main", back: true }
+      ]);
+    } else if (result.topic === "contact") {
+      showContact();
+    }
+  } else if (result.type === "track") {
+    showCenters(result.topic);
+  } else if (result.type === "center") {
+    showCenterInfo(result.track, result.topic);
+  }
+}
+
+// Wire up the search box after it's added to the DOM
+function wireSearchBox() {
+  const input = document.getElementById('search-input');
+  const sendBtn = document.getElementById('search-send');
+  const micBtn = document.getElementById('search-mic');
+  if (!input || !sendBtn || !micBtn) return;
+
+  const submit = () => {
+    const q = input.value.trim();
+    if (!q) return;
+    input.value = '';
+    handleSearch(q);
+  };
+
+  sendBtn.addEventListener('click', submit);
+  input.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      submit();
+    }
+  });
+  micBtn.addEventListener('click', () => toggleRecording(input, micBtn));
+
+  // Hide mic if not supported
+  const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+  if (!SR) {
+    micBtn.style.display = 'none';
+  }
+}
+
+// ===================== Bot Logic =====================
+const messagesEl = document.getElementById('messages');
+const chatArea = document.getElementById('chat-area');
+const typingEl = document.getElementById('typing');
+
+function initAvatars() {
+  document.querySelectorAll('#typing .avatar-mini').forEach(el => {
+    if (!el.innerHTML.trim()) el.innerHTML = makeAvatar(44);
+  });
+}
+
+function scrollDown() {
+  setTimeout(() => { chatArea.scrollTop = chatArea.scrollHeight; }, 50);
+}
+
+// Scroll the new bot message to the TOP of the visible area
+// so user sees the heading/hero image first, not the buttons at the bottom
+function scrollToMessage(el) {
+  if (!el) return;
+  setTimeout(() => {
+    const containerTop = chatArea.getBoundingClientRect().top;
+    const msgTop = el.getBoundingClientRect().top;
+    const offset = msgTop - containerTop + chatArea.scrollTop - 12;
+    chatArea.scrollTo({ top: offset, behavior: 'smooth' });
+  }, 80);
+}
+
+function showTyping() {
+  initAvatars();
+  typingEl.style.display = 'flex';
+  scrollDown();
+}
+
+function hideTyping() {
+  typingEl.style.display = 'none';
+}
+
+function openLink(url) {
+  window.open(url, '_blank', 'noopener,noreferrer');
+}
+
+function botMessage(html, options, delay) {
+  delay = delay || 700;
+  showTyping();
+  setTimeout(() => {
+    hideTyping();
+    const msg = document.createElement('div');
+    msg.className = 'bot-msg';
+    let optsHtml = '';
+    if (options && options.length) {
+      optsHtml = '<div class="bot-options">' + options.map(o => {
+        if (o.url) {
+          return `<button class="bot-btn link-btn" onclick="openLink('${o.url}')">
+            <span>${o.label}</span>
+            <i class="ti ti-external-link arrow"></i>
+          </button>`;
+        }
+        return `<button class="bot-btn ${o.back ? 'back' : ''}" onclick="handleChoice('${o.value}')">
+          <span>${o.label}</span>
+          <i class="ti ti-${o.back ? 'arrow-right' : 'chevron-left'} arrow"></i>
+        </button>`;
+      }).join('') + '</div>';
+    }
+    msg.innerHTML = `
+      <div class="avatar-mini">${makeAvatar(44)}</div>
+      <div class="bot-bubble">${html}${optsHtml}</div>
+    `;
+    messagesEl.appendChild(msg);
+    // Scroll so the TOP of the new message is visible (heading + hero image first)
+    scrollToMessage(msg);
+  }, delay);
+}
+
+function userMessage(text) {
+  const msg = document.createElement('div');
+  msg.className = 'user-msg';
+  msg.innerHTML = `<div class="user-bubble">${text}</div>`;
+  messagesEl.appendChild(msg);
+  scrollDown();
+}
+
+function showMainMenu() {
+  botMessage(
+    `<h4>שלום וברוכים הבאים <span class="welcome-emoji">👋</span></h4>
+     <p>אני <strong>מאיה</strong>, ואני כאן כדי לתת לכם מידע על המדור להכשרה מקצועית בבית הספר לעבודה סוציאלית באוניברסיטה העברית.</p>
+
+     <div class="search-wrapper">
+       <input type="text" class="search-input" id="search-input" placeholder="כתבו או הקליטו שאלה..." autocomplete="off" />
+       <button class="search-btn" id="search-mic" title="הקלטה קולית" aria-label="הקלטה קולית">
+         <i class="ti ti-microphone"></i>
+       </button>
+       <button class="search-btn send" id="search-send" title="שלח" aria-label="שלח שאלה">
+         <i class="ti ti-arrow-left"></i>
+       </button>
+     </div>
+     <p class="search-hint">💡 לדוגמה: "אני מעוניין בעבודה עם נוער" או "מה זה ההכשרה?"</p>
+
+     <div class="search-divider">או בחרו מהתפריט</div>`,
+    [
+      { label: "מידע על ההכשרה המקצועית", value: "general" },
+      { label: "המגמה הפרטנית", value: "partani" },
+      { label: "המגמה הקהילתית", value: "kehilatit" },
+      { label: "יצירת קשר עם המדור", value: "contact" }
+    ],
+    400
+  );
+  // Wire up search box after it's rendered
+  setTimeout(wireSearchBox, 1000);
+}
+
+function showCenters(track) {
+  const t = data[track];
+  botMessage(
+    t.description,
+    [
+      ...t.centers.map(c => ({ label: c.name, value: `center:${track}:${c.id}` })),
+      { label: "חזרה לתפריט הראשי", value: "main", back: true }
+    ]
+  );
+}
+
+function showCenterInfo(track, centerId) {
+  const info = data.centersInfo[centerId];
+  if (!info) return;
+
+  let placesHtml = '';
+  if (info.places && info.places.length) {
+    placesHtml = `
+      <div class="section-label"><i class="ti ti-building"></i> מקומות הכשרה לדוגמה</div>
+      <div class="places-grid">
+        ${info.places.map(p => `
+          <div class="place-chip">
+            <div class="chip-icon"><i class="ti ${p.icon}"></i></div>
+            <span>${p.name}</span>
+          </div>
+        `).join('')}
+      </div>`;
+  }
+
+  // Year stages (for the community center)
+  let stagesHtml = '';
+  if (info.yearB || info.yearC) {
+    stagesHtml = `<div class="section-label"><i class="ti ti-stairs"></i> שלבי ההכשרה</div>`;
+    if (info.yearB) {
+      stagesHtml += `
+        <div class="stage-card">
+          <div class="stage-tag">שנה ב'</div>
+          <div class="stage-title">${info.yearB.title.replace(/^שנה ב' — /, '')}</div>
+          <p class="stage-text">${info.yearB.text}</p>
+          ${info.yearB.examples ? `<p class="stage-examples"><i class="ti ti-map-pin"></i> ${info.yearB.examples}</p>` : ''}
+        </div>`;
+    }
+    if (info.yearC) {
+      stagesHtml += `
+        <div class="stage-card">
+          <div class="stage-tag">שנה ג'</div>
+          <div class="stage-title">${info.yearC.title.replace(/^שנה ג' — /, '')}</div>
+          <p class="stage-text">${info.yearC.text}</p>
+        </div>`;
+    }
+  }
+
+  let noteHtml = '';
+  if (info.note) {
+    noteHtml = `<div class="note-box"><i class="ti ti-info-circle"></i><span>${info.note}</span></div>`;
+  }
+
+  const subtitle = info.subtitle ? `<p style="font-size: 13px; color: #8a7a85; margin: -8px 0 12px 0; font-weight: 500;">${info.subtitle}</p>` : '';
+  const hero = heroSVG[info.icon] || '';
+
+  // Determine back button text
+  const backLabel = track === 'kehilatit' ? "חזרה לתפריט הראשי" : "חזרה לרשימת המרכזים";
+  const backValue = track === 'kehilatit' ? 'main' : `back:${track}`;
+
+  const backOptions = [
+    { label: "למידע נוסף באתר ביה\"ס", url: info.link },
+    { label: backLabel, value: backValue, back: true }
+  ];
+  if (track !== 'kehilatit') {
+    backOptions.push({ label: "חזרה לתפריט הראשי", value: "main", back: true });
+  }
+
+  botMessage(
+    `<div class="center-hero">${hero}</div>
+     <h4>${info.name}</h4>
+     ${subtitle}
+     <p>${info.desc}</p>
+     ${stagesHtml}
+     ${placesHtml}
+     ${noteHtml}
+     <div class="section-label"><i class="ti ti-user-circle"></i> רכז/ת המרכז</div>
+     <div class="contact-card">
+       <div class="name">${info.coordinator}</div>
+       <div class="contact-row"><i class="ti ti-phone"></i> ${info.phone}</div>
+       <div class="contact-row"><i class="ti ti-mail"></i> ${info.email}</div>
+     </div>`,
+    backOptions
+  );
+}
+
+function showContact() {
+  botMessage(
+    `<h4>יצירת קשר עם המדור</h4>
+    <p>נשמח לעמוד לרשותכם לכל שאלה. צוות המדור:</p>
+
+    <div class="staff-card">
+      <div class="staff-icon">
+        <i class="ti ti-user-star"></i>
+      </div>
+      <div class="info">
+        <h5>פרופ' איריס צדוק</h5>
+        <div class="role">ראשת המדור להכשרה מקצועית</div>
+        <div class="contact-row"><i class="ti ti-map-pin"></i> חדר 316</div>
+        <div class="contact-row"><i class="ti ti-calendar"></i> בתיאום מראש</div>
+        <div class="contact-row"><i class="ti ti-mail"></i> iris.zadok@mail.huji.ac.il</div>
+      </div>
+    </div>
+
+    <div class="staff-card">
+      <div class="staff-icon">
+        <i class="ti ti-headset"></i>
+      </div>
+      <div class="info">
+        <h5>גב' מירי בן הרוש</h5>
+        <div class="role">רכזת המדור להכשרה מקצועית</div>
+        <div class="contact-row"><i class="ti ti-map-pin"></i> חדר 316</div>
+        <div class="contact-row"><i class="ti ti-phone"></i> 02-5882105</div>
+        <div class="contact-row"><i class="ti ti-printer"></i> פקס: 02-5882107</div>
+        <div class="contact-row"><i class="ti ti-clock"></i> א'-ה' 8:00-13:30</div>
+        <div class="contact-row"><i class="ti ti-mail"></i> miribe@savion.huji.ac.il</div>
+      </div>
+    </div>
+
+    <div class="note-box">
+      <i class="ti ti-building"></i>
+      <span><strong>כתובת:</strong> ביה"ס לעבודה סוציאלית ע"ש פאול ברוואלד, האוניברסיטה העברית, הר הצופים, ירושלים.</span>
+    </div>`,
+    [
+      { label: "אתר המדור להכשרה מקצועית", url: "https://sw.huji.ac.il/book/%D7%94%D7%9B%D7%A9%D7%A8%D7%94-%D7%9E%D7%A7%D7%A6%D7%95%D7%A2%D7%99%D7%AA-0" },
+      { label: "חזרה לתפריט הראשי", value: "main", back: true }
+    ]
+  );
+}
+
+function handleChoice(value) {
+  if (value === 'general') {
+    userMessage("מידע על ההכשרה המקצועית");
+    botMessage(data.general.content, [
+      { label: "למידע נוסף באתר ביה\"ס", url: data.general.link },
+      { label: "חזרה לתפריט הראשי", value: "main", back: true }
+    ]);
+  } else if (value === 'partani') {
+    userMessage("המגמה הפרטנית");
+    showCenters('partani');
+  } else if (value === 'kehilatit') {
+    userMessage("המגמה הקהילתית");
+    showCenters('kehilatit');
+  } else if (value === 'contact') {
+    userMessage("יצירת קשר עם המדור");
+    showContact();
+  } else if (value === 'main') {
+    showMainMenu();
+  } else if (value.startsWith('search:')) {
+    // Format: search:topic:type:track
+    const parts = value.split(':');
+    const topic = parts[1];
+    const type = parts[2];
+    const track = parts[3];
+    const result = { topic, type, track };
+    routeToTopic(result);
+  } else if (value.startsWith('back:')) {
+    const track = value.split(':')[1];
+    showCenters(track);
+  } else if (value.startsWith('center:')) {
+    const [, track, centerId] = value.split(':');
+    const center = data[track].centers.find(c => c.id === centerId);
+    userMessage(center.name);
+    showCenterInfo(track, centerId);
+  }
+}
+
+// Start the bot
+setTimeout(showMainMenu, 200);
+</script>
+
+</body>
+</html>
