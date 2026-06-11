@@ -1769,6 +1769,18 @@ function handleSearch(query) {
   if (!query || !query.trim()) return;
   userMessage(query);
 
+  // Try to answer factual questions directly (who is coordinator? what is the phone?)
+  var directAns = directAnswer(query);
+  if (directAns) {
+    var kmRes = searchKnowledge(query).filter(function(r){ return r.type === 'center'; });
+    var backOpts = [{ label: "חזרה לתפריט הראשי", value: "main", back: true }];
+    if (kmRes.length > 0) {
+      backOpts.unshift({ label: "מידע מלא על " + kmRes[0].label, value: 'search:' + kmRes[0].topic + ':center:' + (kmRes[0].track || '') });
+    }
+    botMessage(directAns, backOpts);
+    return;
+  }
+
   // Greeting
   if (isVagueQuery(query)) {
     botMessage(
@@ -1847,6 +1859,174 @@ function routeToTopic(result) {
     showCenters(result.topic);
   } else if (result.type === "center") {
     showCenterInfo(result.track, result.topic);
+  }
+}
+
+// ===================== Direct Answer Engine =====================
+// Answer specific factual questions directly from data without routing
+
+function directAnswer(query) {
+  var n = normalize(query);
+
+  // Detect question type
+  var askingCoord  = n.includes('מי הרכז') || n.includes('רכז') || n.includes('מנהל') || n.includes('אחראי');
+  var askingPhone  = n.includes('טלפון') || n.includes('מספר') || n.includes('לטלפן') || n.includes('להתקשר');
+  var askingMail   = n.includes('מייל') || n.includes('אימייל') || n.includes('אי-מייל') || n.includes('כתובת מייל');
+  var askingExists = n.includes('יש') || n.includes('האם') || n.includes('אפשר') || n.includes('ניתן');
+
+  if (!askingCoord && !askingPhone && !askingMail) return null;
+
+  // Find which center the question is about
+  var matchedId = null;
+  var bestScore = 0;
+  for (var cid in data.centersInfo) {
+    var cinfo = data.centersInfo[cid];
+    var nameNorm = normalize(cinfo.name || '');
+    // Simple overlap check
+    var words = nameNorm.split(' ').filter(function(w){ return w.length > 2; });
+    var hits = words.filter(function(w){ return n.includes(w); }).length;
+    if (hits > bestScore) { bestScore = hits; matchedId = cid; }
+  }
+  // Also match by knowledgeMap
+  var kmResults = searchKnowledge(query).filter(function(r){ return r.type === 'center'; });
+  if (kmResults.length > 0 && kmResults[0].score > bestScore * 2) {
+    matchedId = kmResults[0].topic;
+  }
+
+  if (!matchedId) return null;
+  var info = data.centersInfo[matchedId];
+  if (!info) return null;
+
+  // Build inline answer
+  if (askingPhone) {
+    return `<h4>טלפון — ${info.name}</h4>
+            <div class="contact-card">
+              <div class="contact-row"><i class="ti ti-phone"></i> ${info.phone}</div>
+              <div class="contact-row"><i class="ti ti-user-circle"></i> ${info.coordinator}</div>
+            </div>`;
+  }
+  if (askingMail) {
+    return `<h4>מייל — ${info.name}</h4>
+            <div class="contact-card">
+              <div class="contact-row"><i class="ti ti-mail"></i> ${info.email}</div>
+              <div class="contact-row"><i class="ti ti-user-circle"></i> ${info.coordinator}</div>
+            </div>`;
+  }
+  if (askingCoord) {
+    return `<h4>רכז/ת — ${info.name}</h4>
+            <div class="contact-card">
+              <div class="name">${info.coordinator}</div>
+              <div class="contact-row"><i class="ti ti-phone"></i> ${info.phone}</div>
+              <div class="contact-row"><i class="ti ti-mail"></i> ${info.email}</div>
+            </div>`;
+  }
+  return null;
+}
+
+// ===================== Speech Recognition =====================
+let recognition = null;
+let isRecording = false;
+
+function initSpeechRecognition() {
+  const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+  if (!SpeechRecognition) return null;
+  const rec = new SpeechRecognition();
+  rec.lang = 'he-IL';
+  rec.continuous = true;       // keep listening through pauses
+  rec.interimResults = true;   // show text as user speaks
+  rec.maxAlternatives = 1;
+  return rec;
+}
+
+function toggleRecording(inputEl, micBtn) {
+  if (isRecording) {
+    // Stop recording
+    if (recognition) recognition.stop();
+    stopRecording(micBtn);
+    // Auto-submit what was captured
+    setTimeout(() => {
+      const q = inputEl.value.trim();
+      if (q) { inputEl.value = ''; handleSearch(q); }
+    }, 300);
+    return;
+  }
+
+  // Start fresh recognition each time (browser quirk: reuse can break)
+  recognition = initSpeechRecognition();
+  if (!recognition) {
+    botMessage(
+      '<p>הקלטה קולית אינה נתמכת בדפדפן זה. נסו Chrome או Safari.</p>',
+      [{ label: "חזרה לתפריט הראשי", value: "main", back: true }]
+    );
+    return;
+  }
+
+  let finalTranscript = '';
+  let silenceTimer = null;
+
+  recognition.onstart = () => {
+    isRecording = true;
+    micBtn.classList.add('recording');
+    const icon = micBtn.querySelector('i');
+    if (icon) { icon.classList.remove('ti-microphone'); icon.classList.add('ti-player-stop-filled'); }
+    inputEl.placeholder = 'מקשיב...';
+  };
+
+  recognition.onresult = (event) => {
+    let interim = '';
+    finalTranscript = '';
+    for (let i = 0; i < event.results.length; i++) {
+      if (event.results[i].isFinal) finalTranscript += event.results[i][0].transcript;
+      else interim += event.results[i][0].transcript;
+    }
+    inputEl.value = finalTranscript || interim;
+
+    // Auto-submit after 2 seconds of silence
+    clearTimeout(silenceTimer);
+    silenceTimer = setTimeout(() => {
+      if (isRecording && inputEl.value.trim()) {
+        if (recognition) recognition.stop();
+      }
+    }, 2000);
+  };
+
+  recognition.onend = () => {
+    clearTimeout(silenceTimer);
+    stopRecording(micBtn);
+    inputEl.placeholder = 'כתבו או הקליטו שאלה...';
+    const q = inputEl.value.trim();
+    if (q) { inputEl.value = ''; handleSearch(q); }
+  };
+
+  recognition.onerror = (event) => {
+    clearTimeout(silenceTimer);
+    stopRecording(micBtn);
+    inputEl.placeholder = 'כתבו או הקליטו שאלה...';
+    if (event.error === 'not-allowed') {
+      botMessage(
+        '<p>⚠️ אנא אפשרו גישה למיקרופון בהגדרות הדפדפן.</p>',
+        [{ label: "חזרה לתפריט הראשי", value: "main", back: true }]
+      );
+    }
+  };
+
+  try {
+    recognition.start();
+  } catch(e) {
+    stopRecording(micBtn);
+    inputEl.placeholder = 'כתבו או הקליטו שאלה...';
+  }
+}
+
+function stopRecording(micBtn) {
+  isRecording = false;
+  if (micBtn) {
+    micBtn.classList.remove('recording');
+    const icon = micBtn.querySelector('i');
+    if (icon) {
+      icon.classList.remove('ti-player-stop-filled');
+      icon.classList.add('ti-microphone');
+    }
   }
 }
 
